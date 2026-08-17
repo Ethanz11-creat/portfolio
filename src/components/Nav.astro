@@ -9,9 +9,9 @@ interface Props {
 
 const { locale } = Astro.props;
 const links = [
-  { href: '#projects', label: t(locale, 'nav.projects') },
-  { href: '#blog', label: t(locale, 'nav.blog') },
-  { href: '#about', label: t(locale, 'nav.about') },
+  { href: `/${locale}/#projects`, label: t(locale, 'nav.projects') },
+  { href: `/${locale}/#blog`, label: t(locale, 'nav.blog') },
+  { href: `/${locale}/#about`, label: t(locale, 'nav.about') },
 ];
 ---
 <header class="nav" id="site-nav">

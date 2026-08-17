@@ -4,6 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export function initMotion(): void {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
   // Hero 进入：逐行 fade-up，200ms 交错
   const heroLines = gsap.utils.toArray<HTMLElement>('[data-hero-line]');
   if (heroLines.length > 0) {
@@ -31,7 +33,8 @@ export function initMotion(): void {
   // 指标数字：进入视口滚动计数
   gsap.utils.toArray<HTMLElement>('[data-count]').forEach((el) => {
     const target = Number(el.dataset.count);
-    if (Number.isNaN(target)) return;
+    if (!Number.isFinite(target)) return;
+    const suffix = (el.dataset.count ?? '').replace(/[\d.\-+eE]+/g, '');
     const obj = { val: 0 };
     gsap.to(obj, {
       val: target,
@@ -39,7 +42,7 @@ export function initMotion(): void {
       ease: 'power2.out',
       scrollTrigger: { trigger: el, start: 'top 90%' },
       onUpdate: () => {
-        el.textContent = String(Math.round(obj.val));
+        el.textContent = String(Math.round(obj.val)) + suffix;
       },
     });
   });
