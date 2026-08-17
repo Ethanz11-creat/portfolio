@@ -20,6 +20,9 @@ export const ui = {
     'blog.all': '全部文章',
     'blog.back': '返回方法论',
     'project.back': '返回首页',
+    'project.github': 'GitHub ↗',
+    '404.message': '页面不存在',
+    '404.home': '返回首页',
   },
   en: {
     'nav.projects': 'Work',
@@ -39,6 +42,9 @@ export const ui = {
     'blog.all': 'All Posts',
     'blog.back': 'Back to Thinking',
     'project.back': 'Back to Home',
+    'project.github': 'GitHub ↗',
+    '404.message': 'Page not found',
+    '404.home': 'Back to Home',
   },
 } as const;
 

@@ -36,7 +36,7 @@ const { title, subtitle, tags, github, metrics } = entry.data;
         <ul class="tags">
           {tags.map((tag) => <li>{tag}</li>)}
         </ul>
-        {github && <a href={github} class="gh-link" target="_blank" rel="noopener">GitHub ↗</a>}
+        {github && <a href={github} class="gh-link" target="_blank" rel="noopener">{t(locale, 'project.github')}</a>}
       </header>
       <article class="prose" data-reveal>
         <Content />
