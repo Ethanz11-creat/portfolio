@@ -17,7 +17,7 @@ const { locale } = Astro.props;
     <p class="hero-tagline" data-hero-line>{t(locale, 'hero.tagline')}</p>
     <div class="hero-cta" data-hero-line>
       <a href="#projects" class="btn btn-primary">{t(locale, 'hero.cta.work')}</a>
-      <a href="/resume.pdf" class="btn btn-ghost" target="_blank">{t(locale, 'hero.cta.resume')}</a>
+      <a href="/resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">{t(locale, 'hero.cta.resume')}</a>
     </div>
   </div>
 </section>
