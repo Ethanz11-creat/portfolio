@@ -1,0 +1,32 @@
+---
+title: How to Use Benchmarks When Building Agents
+description: A benchmark is not an exam — it is an answer bank. Read leaderboards to choose, copy scoring methods to build your own eval set, slice to diagnose
+date: 2026-07-08
+tags: [Agent, Benchmark, Evaluation]
+---
+
+## The problem
+
+Almost every agent-building team has lived this loop: change a version, manually try three or five cases, it feels better, ship it. Two days later a user reports a new badcase, patch it again.
+
+The problem is not that the changes are slow — it is that there is **no coordinate system**: you cannot tell whether a change made the system better or worse overall, nor which segment of the pipeline broke. It all reduces to one question: **how does an agent know it did the right thing?**
+
+## The right path: flip the loop
+
+First define what "good" means (an eval set + scoring criteria), then regress every change against the eval set. The smallest unit of change is no longer "changed a feature" but "eval score 61 → 68, zero regressions".
+
+## Three things to take from public benchmarks
+
+1. **Read leaderboards to choose**: compare models and approaches
+2. **Copy scoring methods**: borrow public benchmark criteria to build your own eval set
+3. **Slice to diagnose**: when something breaks, decompose a single run into nodes and localize the fault
+
+## The 7 nodes of a single execution
+
+Any agent system — regardless of framework or model — can decompose a single request into 7 nodes: input understanding & clarification, retrieval/tool calls, context assembly, reasoning & planning, execution, result verification, output. Each node has typical failure modes — asking nothing when it should, charging ahead with ambiguous requirements, irrelevant retrieval, missing verification that lets hallucinations through.
+
+## Lessons from practice
+
+- An eval set is never built once: every badcase you find gets distilled into it
+- Scoring criteria must be executable: only when you can say what "correct" means do changes have direction
+- Iteration without a coordinate system only looks like progress

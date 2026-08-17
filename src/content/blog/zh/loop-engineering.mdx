@@ -1,0 +1,27 @@
+---
+title: 从 Loop 到 Loop Engineering
+description: 从 Prompt Engineering 到 Loop Engineering——AI 连续自主工作时长变长，工程重点如何迁移
+date: 2026-06-25
+tags: [AI-Coding, Agent, Loop-Engineering]
+---
+
+## 核心观点
+
+Loop Engineering 不是"把提示词重复执行"，而是设计一套替你提示、调度、验证和交接 Agent 的系统。你从直接提示 Agent 的参与者，转为设计 Agent 自运行工作流的系统设计者。
+
+## 四个阶段
+
+过去两年，AI 辅助开发持续变化的底层变量是：**AI 可连续自主工作的时长越来越长**。每一阶段都对应一个新的工程重点。
+
+| 阶段 | 优化对象 | 工作单位 | 核心命题 | 连续自主时长 |
+| --- | --- | --- | --- | --- |
+| Prompt Engineering | 单条指令的措辞 | 一次手动对话 | 措辞更准，单次输出更好 | 一问一答 |
+| Context Engineering | 进入上下文窗口的内容 | 围绕一次回答的环境 | 背景给对，难任务也能推理 | 数十步 |
+| Harness Engineering | 单个任务的安全、可靠执行环境 | 一个自主会话 | 环境造好，Agent 可长时间自主运行 | 数小时 |
+| Loop Engineering | 跨会话的自运行工作流 | 多轮、跨会话生命周期 | 系统造好，可无人值守持续交付 | 数天、数十实例并行 |
+
+## 实践中的体会
+
+- 每个阶段都有典型瓶颈：Prompt 阶段是输出质量，Context 阶段是上下文缺失或过载，Harness 阶段是单会话无人调度，Loop 阶段是过早停止、忽略错误、无法验证完成
+- 从"参与者"到"系统设计者"的转变，是 AI 协作方式最重要的分水岭
+- 设计 Loop 时，验证完成与错误处理比提示词本身更重要

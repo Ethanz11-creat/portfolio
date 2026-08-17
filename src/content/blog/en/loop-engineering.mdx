@@ -1,0 +1,27 @@
+---
+title: From Loop to Loop Engineering
+description: From prompt engineering to loop engineering — as AI's continuous autonomous work span grows, the engineering focus shifts
+date: 2026-06-25
+tags: [AI-Coding, Agent, Loop-Engineering]
+---
+
+## The core thesis
+
+Loop Engineering is not "repeating a prompt" — it is designing a system that prompts, schedules, validates and hands off agents on your behalf. You move from being a participant who prompts agents directly, to a system designer who builds self-running agent workflows.
+
+## Four stages
+
+The underlying variable driving AI-assisted development over the past two years: **AI's continuous autonomous work span keeps growing**. Each stage brings a new engineering focus.
+
+| Stage | Optimizes | Unit of work | Core question | Autonomous span |
+| --- | --- | --- | --- | --- |
+| Prompt Engineering | Wording of a single instruction | One manual conversation | Better wording, better single output | One Q&A |
+| Context Engineering | What enters the context window | The environment around one answer | Right context, hard tasks become tractable | Tens of steps |
+| Harness Engineering | Safe, reliable execution environment for one task | One autonomous session | Build the environment, agents run long | Hours |
+| Loop Engineering | Self-running workflows across sessions | Multi-round, cross-session lifecycle | Build the system, unattended continuous delivery | Days, dozens of parallel instances |
+
+## Lessons from practice
+
+- Each stage has a typical bottleneck: output quality at the Prompt stage, missing or overloaded context at the Context stage, unscheduled single sessions at the Harness stage, and premature stopping, ignored errors and unverifiable completion at the Loop stage
+- The shift from "participant" to "system designer" is the most important watershed in AI collaboration
+- When designing loops, completion verification and error handling matter more than the prompts themselves

@@ -1,0 +1,32 @@
+---
+title: Flowtype
+subtitle: 语音转 prompt 的 macOS 应用——把口语化的想法一键变成结构化编码指令
+order: 1
+featured: true
+tags: [Swift, MLX, Qwen3-ASR, LLM, SQLite]
+github: https://github.com/Ethanz11-creat/Flowtype
+year: '2026'
+metrics:
+  - value: '5'
+    label: 流水线阶段
+  - value: '0'
+    label: Python 依赖
+  - value: '300MB'
+    label: 本地 4-bit 模型
+---
+
+## 做什么
+
+Flowtype 是一个为 AI 编码工作流设计的 macOS 语音输入应用：双击 Command 开始录音，再按一次输出原始转写，双击结束则输出经 LLM 润色后的结构化 prompt，并直接注入当前聚焦的输入框。
+
+## 怎么用 AI 做的
+
+- **本地模型落地**：用 speech-swift（Qwen3-ASR via MLX，约 300MB 4-bit 量化）在 Swift 内直接完成转写，砍掉 Python 服务端，实现零 Python 依赖
+- **模块化流水线**：Recording → ASR → PostProcess → Polish → Injection 五阶段，SessionContext 状态贯穿全程
+- **产品闭环**：SQLite（GRDB）历史记录、统计面板、GitHub 风格热力图、隐私优先（音频不落盘）
+
+## 技术要点
+
+- Swift 6.2 / macOS 15+，SwiftUI
+- Qwen3-ASR 本地推理（MLX），AppleSpeech 兜底
+- 多 LLM Provider（OpenAI 兼容），词典与风格包
