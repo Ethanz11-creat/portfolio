@@ -1,0 +1,14 @@
+:root {
+  --bg: #fafaf8;
+  --ink: #111111;
+  --ink-secondary: #666666;
+  --accent: #4f7cff;
+  --line: #e5e5e0;
+  --dark: #0e0e0e;
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --font-sans: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', 'PingFang SC', sans-serif;
+  --container: 1200px;
+  --space-section: clamp(6rem, 10vw, 10rem);
+}
