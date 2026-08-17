@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+
+const { entry } = Astro.props;
+const { title, description, date, tags } = entry.data;
+const locale = entry.id.split('/')[0];
+const href = `/${locale}/blog/${entry.id.split('/')[1]}/`;
+const dateStr = date.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+<a href={href} class="blog-card" data-reveal>
+  <time>{dateStr}</time>
+  <h3>{title}</h3>
+  <p>{description}</p>
+  <ul class="tags">
+    {tags.map((tag) => <li>{tag}</li>)}
+  </ul>
+</a>
+
+<style>
+  .blog-card {
+    display: block;
+    padding: 1.6rem 0;
+    border-bottom: 1px solid var(--line);
+    transition: padding-left 0.25s;
+  }
+  .blog-card:hover {
+    padding-left: 12px;
+  }
+  .blog-card time {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .blog-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0.3rem 0 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .blog-card p {
+    color: var(--ink-secondary);
+    font-size: 0.95rem;
+    max-width: 640px;
+  }
+  .blog-card .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 0.8rem;
+  }
+  .blog-card .tags li {
+    font-size: 0.75rem;
+    color: var(--ink-secondary);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+  }
+</style>

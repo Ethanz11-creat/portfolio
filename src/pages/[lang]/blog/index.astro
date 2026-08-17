@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Nav from '../../../components/Nav.astro';
+import BlogCard from '../../../components/BlogCard.astro';
+import Footer from '../../../components/Footer.astro';
+import { t } from '../../../lib/i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'zh' } }, { params: { lang: 'en' } }];
+}
+
+const { lang } = Astro.params;
+const locale = (lang === 'en' ? 'en' : 'zh') as 'zh' | 'en';
+const posts = (await getCollection('blog', ({ id }) => id.startsWith(locale + '/')))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title={t(locale, 'section.blog')}>
+  <Nav locale={locale} />
+  <main class="blog-page">
+    <div class="container">
+      <a href={`/${locale}/#blog`} class="back">← {t(locale, 'blog.back')}</a>
+      <h1 class="page-title">{t(locale, 'section.blog')}</h1>
+      <div class="list">
+        {posts.map((post) => <BlogCard entry={post} />)}
+      </div>
+    </div>
+  </main>
+  <Footer locale={locale} />
+</BaseLayout>
+
+<style>
+  .blog-page {
+    padding-top: 7rem;
+    padding-bottom: 5rem;
+  }
+  .back {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--ink-secondary);
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+  .back:hover {
+    color: var(--accent);
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-bottom: 2.5rem;
+  }
+  .list {
+    max-width: 760px;
+  }
+</style>

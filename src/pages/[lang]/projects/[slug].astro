@@ -1,0 +1,141 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import { t } from '../../../lib/i18n';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('projects');
+  return entries.map((entry) => {
+    const [lang, slug] = entry.id.split('/');
+    return { params: { lang, slug }, props: { entry } };
+  });
+}
+
+const { entry } = Astro.props;
+const locale = (entry.id.split('/')[0] === 'en' ? 'en' : 'zh') as 'zh' | 'en';
+const { Content } = await render(entry);
+const { title, subtitle, tags, github, metrics } = entry.data;
+---
+<BaseLayout title={title}>
+  <Nav locale={locale} />
+  <main class="project-page">
+    <div class="container">
+      <a href={`/${locale}/#projects`} class="back">← {t(locale, 'project.back')}</a>
+      <header class="project-head" data-reveal>
+        <h1>{title}</h1>
+        <p class="subtitle">{subtitle}</p>
+        {metrics && (
+          <ul class="metrics">
+            {metrics.map((m) => (
+              <li><strong>{m.value}</strong><span>{m.label}</span></li>
+            ))}
+          </ul>
+        )}
+        <ul class="tags">
+          {tags.map((tag) => <li>{tag}</li>)}
+        </ul>
+        {github && <a href={github} class="gh-link" target="_blank" rel="noopener">GitHub ↗</a>}
+      </header>
+      <article class="prose" data-reveal>
+        <Content />
+      </article>
+    </div>
+  </main>
+  <Footer locale={locale} />
+</BaseLayout>
+
+<style>
+  .project-page {
+    padding-top: 7rem;
+    padding-bottom: 5rem;
+  }
+  .back {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--ink-secondary);
+    margin-bottom: 2.5rem;
+    transition: color 0.2s;
+  }
+  .back:hover {
+    color: var(--accent);
+  }
+  .project-head {
+    margin-bottom: 3rem;
+  }
+  .project-head h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .project-head .subtitle {
+    color: var(--ink-secondary);
+    font-size: 1.1rem;
+    margin-top: 0.8rem;
+    max-width: 640px;
+  }
+  .project-head .metrics {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1.6rem;
+  }
+  .project-head .metrics li {
+    display: flex;
+    flex-direction: column;
+  }
+  .project-head .metrics strong {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  .project-head .metrics span {
+    font-size: 0.8rem;
+    color: var(--ink-secondary);
+  }
+  .project-head .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1.4rem;
+  }
+  .project-head .tags li {
+    font-size: 0.8rem;
+    color: var(--ink-secondary);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.25rem 0.8rem;
+  }
+  .gh-link {
+    display: inline-block;
+    margin-top: 1.4rem;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .prose {
+    max-width: 720px;
+  }
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2.5rem 0 1rem;
+  }
+  .prose p {
+    margin-bottom: 1.2rem;
+    color: #333;
+  }
+  .prose ul {
+    list-style: disc;
+    padding-left: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .prose li {
+    margin-bottom: 0.4rem;
+  }
+  .prose strong {
+    font-weight: 600;
+  }
+</style>

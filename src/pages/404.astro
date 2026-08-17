@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="404">
+  <main class="nf">
+    <div class="container">
+      <h1>404</h1>
+      <p>Page not found · 页面不存在</p>
+      <a href="/zh/">← 返回首页</a>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  .nf h1 {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    font-weight: 600;
+  }
+  .nf p {
+    color: var(--ink-secondary);
+    margin: 0.5rem 0 1.5rem;
+  }
+  .nf a {
+    color: var(--accent);
+  }
+</style>

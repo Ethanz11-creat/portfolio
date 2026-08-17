@@ -1,0 +1,115 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+}
+
+const { entry } = Astro.props;
+const { title, subtitle, tags, github, featured, metrics } = entry.data;
+const href = `/${entry.id.split('/')[0]}/projects/${entry.id.split('/')[1]}/`;
+---
+<a href={href} class:list={['project-card', { featured }]} data-reveal>
+  <div class="card-head">
+    <h3>{title}</h3>
+    {github && <span class="gh">GitHub ↗</span>}
+  </div>
+  <p class="subtitle">{subtitle}</p>
+  {metrics && (
+    <ul class="metrics">
+      {metrics.map((m) => (
+        <li>
+          <strong>{m.value}</strong>
+          <span>{m.label}</span>
+        </li>
+      ))}
+    </ul>
+  )}
+  <ul class="tags">
+    {tags.map((tag) => <li>{tag}</li>)}
+  </ul>
+</a>
+
+<style>
+  .project-card {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(79, 124, 255, 0.12);
+  }
+  .project-card.featured {
+    grid-column: span 2;
+  }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 0.6rem;
+  }
+  .card-head h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .gh {
+    font-size: 0.8rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .subtitle {
+    color: var(--ink-secondary);
+    font-size: 0.98rem;
+    margin-bottom: 1.2rem;
+  }
+  .metrics {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.2rem;
+  }
+  .metrics li {
+    display: flex;
+    flex-direction: column;
+  }
+  .metrics strong {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .metrics span {
+    font-size: 0.78rem;
+    color: var(--ink-secondary);
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tags li {
+    font-size: 0.78rem;
+    color: var(--ink-secondary);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .project-card:hover .tags li {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  @media (max-width: 900px) {
+    .project-card.featured {
+      grid-column: span 1;
+    }
+  }
+</style>

@@ -3,7 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Nav from '../../components/Nav.astro';
 import Hero from '../../components/Hero.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import BlogCard from '../../components/BlogCard.astro';
 import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
 import { t } from '../../lib/i18n';
 
 export function getStaticPaths() {
@@ -12,6 +15,13 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params;
 const locale = (lang === 'en' ? 'en' : 'zh') as 'zh' | 'en';
+const projects = (await getCollection('projects', ({ id }) => id.startsWith(locale + '/')))
+  .sort((a, b) => a.data.order - b.data.order);
+const tools = (await getCollection('tools', ({ id }) => id.startsWith(locale + '/')))
+  .sort((a, b) => a.data.order - b.data.order);
+const posts = (await getCollection('blog', ({ id }) => id.startsWith(locale + '/')))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 ---
 <BaseLayout title={t(locale, 'hero.role')}>
   <Nav locale={locale} />
@@ -20,11 +30,18 @@ const locale = (lang === 'en' ? 'en' : 'zh') as 'zh' | 'en';
     <section id="projects" class="section">
       <div class="container">
         <SectionHeader num="01" title={t(locale, 'section.projects')} desc={t(locale, 'section.projects.desc')} />
+        <div class="project-grid">
+          {projects.map((p) => <ProjectCard entry={p} />)}
+        </div>
       </div>
     </section>
     <section id="blog" class="section">
       <div class="container">
         <SectionHeader num="02" title={t(locale, 'section.blog')} desc={t(locale, 'section.blog.desc')} />
+        <div class="blog-list">
+          {posts.map((post) => <BlogCard entry={post} />)}
+        </div>
+        <a href={`/${locale}/blog/`} class="all-link">{t(locale, 'blog.all')} →</a>
       </div>
     </section>
     <section id="about" class="section">
@@ -35,3 +52,25 @@ const locale = (lang === 'en' ? 'en' : 'zh') as 'zh' | 'en';
   </main>
   <Footer locale={locale} />
 </BaseLayout>
+
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .blog-list {
+    max-width: 760px;
+  }
+  .all-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+  @media (max-width: 900px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
