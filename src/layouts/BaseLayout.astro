@@ -6,6 +6,7 @@ import '@fontsource/space-grotesk/500.css';
 import '@fontsource/space-grotesk/600.css';
 import '@fontsource/space-grotesk/700.css';
 import '../styles/global.css';
+import Motion from '../components/Motion.astro';
 import { getLangFromUrl } from '../lib/i18n';
 
 interface Props {
@@ -27,5 +28,6 @@ const lang = getLangFromUrl(Astro.url);
   </head>
   <body>
     <slot />
+    <Motion />
   </body>
 </html>
