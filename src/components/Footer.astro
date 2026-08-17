@@ -1,0 +1,49 @@
+---
+import type { Locale } from '../lib/i18n';
+import { t } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="rights">{t(locale, 'footer.rights')}</p>
+    <div class="social">
+      <a href="https://github.com/Ethanz11-creat" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:zhaoyiheng@example.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--line);
+    padding: 2.5rem 0;
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--ink-secondary);
+  }
+  .social {
+    display: flex;
+    gap: 20px;
+  }
+  .social a {
+    transition: color 0.2s;
+  }
+  .social a:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 640px) {
+    .footer-inner {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+import type { Locale } from '../lib/i18n';
+import { t } from '../lib/i18n';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const links = [
+  { href: '#projects', label: t(locale, 'nav.projects') },
+  { href: '#blog', label: t(locale, 'nav.blog') },
+  { href: '#about', label: t(locale, 'nav.about') },
+];
+---
+<header class="nav" id="site-nav">
+  <div class="container nav-inner">
+    <a href={`/${locale}/`} class="logo">Yiheng<span class="dot">.</span></a>
+    <nav class="nav-links">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <LanguageSwitcher locale={locale} />
+    </nav>
+  </div>
+</header>
+
+<script>
+  const nav = document.getElementById('site-nav');
+  const onScroll = () => {
+    if (!nav) return;
+    nav.classList.toggle('scrolled', window.scrollY > 24);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
+  }
+  .nav.scrolled {
+    background: rgba(250, 250, 248, 0.85);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 0 var(--line);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .logo .dot {
+    color: var(--accent);
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font-size: 0.95rem;
+  }
+  .nav-links a {
+    color: var(--ink-secondary);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover {
+    color: var(--ink);
+  }
+  @media (max-width: 640px) {
+    .nav-links {
+      gap: 16px;
+    }
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+import type { Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const path = Astro.url.pathname;
+const zhPath = path.replace(/^\/(zh|en)/, '/zh');
+const enPath = path.replace(/^\/(zh|en)/, '/en');
+---
+<div class="lang-switch">
+  <a href={zhPath} class:list={{ active: locale === 'zh' }}>中</a>
+  <span class="sep">/</span>
+  <a href={enPath} class:list={{ active: locale === 'en' }}>EN</a>
+</div>
+
+<style>
+  .lang-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .lang-switch a {
+    color: var(--ink-secondary);
+    transition: color 0.2s;
+  }
+  .lang-switch a:hover {
+    color: var(--ink);
+  }
+  .lang-switch a.active {
+    color: var(--accent);
+  }
+  .sep {
+    color: var(--line);
+  }
+</style>
