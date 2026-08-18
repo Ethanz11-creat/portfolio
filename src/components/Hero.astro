@@ -4,53 +4,90 @@ import { t } from '../lib/i18n';
 
 interface Props {
   locale: Locale;
+  workbenchItems: Array<{
+    title: string;
+    label: string;
+    href: string;
+    tone: 'lime' | 'butter' | 'lavender' | 'paper';
+    external?: boolean;
+  }>;
 }
 
-const { locale } = Astro.props;
+const { locale, workbenchItems } = Astro.props;
 ---
 <section class="hero">
   <div class="container hero-inner">
-    <p class="hero-kicker" data-hero-line>ZHAO YIHENG</p>
-    <h1 class="hero-title">
-      <span data-hero-line>{t(locale, 'hero.role')}</span>
-    </h1>
-    <p class="hero-tagline" data-hero-line>{t(locale, 'hero.tagline')}</p>
-    <div class="hero-cta" data-hero-line>
-      <a href="#projects" class="btn btn-primary">{t(locale, 'hero.cta.work')}</a>
-      <a href="/resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">{t(locale, 'hero.cta.resume')}</a>
+    <div class="hero-copy">
+      <p class="hero-kicker" data-hero-line><span class="pixel-dot"></span>ZHAO YIHENG / 2026</p>
+      <h1 class="hero-title">
+        <span data-hero-line>{t(locale, 'hero.role')}</span>
+      </h1>
+      <p class="hero-tagline" data-hero-line>{t(locale, 'hero.tagline')}</p>
+      <div class="hero-cta" data-hero-line>
+        <a href="#projects" class="btn btn-primary">{t(locale, 'hero.cta.work')} <span aria-hidden="true">↘</span></a>
+        <a href="/resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">{t(locale, 'hero.cta.resume')}</a>
+      </div>
+    </div>
+    <div class="workbench" data-hero-line aria-label={t(locale, 'hero.workbench')}>
+      <div class="workbench-label"><span>{t(locale, 'hero.workbench')}</span><span>✦</span></div>
+      <p class="workbench-note">{t(locale, 'hero.workbench.note')}</p>
+      <div class="workbench-cards">
+        {workbenchItems.map((item, index) => (
+          <a
+            href={item.href}
+            class:list={['workbench-card', `tone-${item.tone}`, `card-${index + 1}`]}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener' : undefined}
+          >
+            <span class="card-index">0{index + 1}</span>
+            <span class="card-label">{item.label}</span>
+            <strong>{item.title}</strong>
+            <span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   .hero {
-    background: var(--dark);
-    color: #f5f5f2;
-    padding: clamp(9rem, 18vh, 13rem) 0 clamp(5rem, 10vh, 8rem);
+    background-color: var(--bg);
+    background-image: linear-gradient(rgba(23, 32, 25, 0.075) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 32, 25, 0.075) 1px, transparent 1px);
+    background-size: 28px 28px;
+    min-height: min(900px, 100svh);
+    padding: clamp(8rem, 16vh, 11rem) 0 clamp(4.5rem, 9vh, 7rem);
+    overflow: hidden;
   }
   .hero-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr);
+    align-items: center;
+    gap: clamp(3rem, 7vw, 7rem);
   }
+  .hero-copy { display: flex; flex-direction: column; gap: 1.5rem; }
   .hero-kicker {
-    font-family: var(--font-display);
-    font-size: 0.85rem;
-    letter-spacing: 0.35em;
-    color: var(--accent);
+    align-items: center;
+    display: flex;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--ink-secondary);
   }
+  .pixel-dot { width: 9px; height: 9px; background: var(--lime); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--accent); margin-right: 9px; }
   .hero-title {
     font-family: var(--font-display);
-    font-size: clamp(3rem, 8vw, 6.5rem);
-    font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    max-width: 14em;
+    font-size: clamp(3.4rem, 6.1vw, 6.4rem);
+    font-weight: 500;
+    line-height: 0.99;
+    letter-spacing: -0.055em;
+    max-width: 7.5em;
   }
   .hero-tagline {
     font-size: clamp(1.05rem, 2vw, 1.3rem);
-    color: rgba(245, 245, 242, 0.72);
-    max-width: 34em;
+    color: var(--ink-secondary);
+    max-width: 27em;
   }
   .hero-cta {
     display: flex;
@@ -59,24 +96,64 @@ const { locale } = Astro.props;
   }
   .btn {
     display: inline-block;
-    padding: 0.8rem 1.8rem;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: transform 0.2s, opacity 0.2s;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.79rem;
+    font-weight: 700;
+    padding: 0.8rem 1.1rem;
+    transition: transform 0.18s, box-shadow 0.18s;
   }
   .btn:hover {
-    transform: translateY(-2px);
+    box-shadow: 1px 1px 0 var(--ink);
+    transform: translate(3px, 3px);
   }
   .btn-primary {
-    background: var(--accent-deep);
-    color: #fff;
+    background: var(--lime);
+    color: var(--ink);
   }
   .btn-ghost {
-    border: 1px solid rgba(245, 245, 242, 0.3);
-    color: #f5f5f2;
+    background: var(--paper);
+    color: var(--ink);
   }
-  .btn-ghost:hover {
-    opacity: 0.8;
+  .workbench { position: relative; min-height: 450px; padding-top: 1rem; }
+  .workbench-label { align-items: center; display: flex; font-family: var(--font-mono); font-size: 0.76rem; font-weight: 700; justify-content: space-between; letter-spacing: 0.1em; margin: 0 0 0.5rem 1rem; text-transform: uppercase; }
+  .workbench-note { color: var(--ink-secondary); font-family: var(--font-mono); font-size: 0.78rem; margin-left: 1rem; max-width: 22rem; }
+  .workbench-cards { min-height: 395px; position: relative; }
+  .workbench-card { border: 2px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); color: var(--ink); display: flex; flex-direction: column; min-height: 168px; padding: 1rem; position: absolute; transition: transform 0.2s ease, box-shadow 0.2s ease; width: min(255px, 48%); }
+  .workbench-card:hover { box-shadow: 9px 9px 0 var(--ink); transform: translate(-3px, -4px) rotate(0deg) !important; z-index: 9; }
+  .workbench-card strong { font-family: var(--font-display); font-size: clamp(1.35rem, 2vw, 1.85rem); font-weight: 500; letter-spacing: -0.04em; line-height: 1.02; margin-top: auto; max-width: 10ch; }
+  .card-index, .card-label { font-family: var(--font-mono); font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em; }
+  .card-label { color: var(--ink-secondary); margin-top: 0.15rem; }
+  .card-arrow { font-size: 1.1rem; position: absolute; right: 0.9rem; top: 0.75rem; }
+  .tone-lime { background: var(--lime); }
+  .tone-butter { background: var(--butter); }
+  .tone-lavender { background: var(--lavender); }
+  .tone-paper { background: var(--paper); }
+  .card-1 { left: 2%; top: 2.1rem; transform: rotate(-5deg); z-index: 3; }
+  .card-2 { right: 4%; top: 3.4rem; transform: rotate(4deg); z-index: 2; }
+  .card-3 { bottom: 0.3rem; left: 17%; transform: rotate(2.5deg); z-index: 4; }
+  .card-4 { bottom: 1.2rem; right: 0; transform: rotate(-3deg); z-index: 1; }
+  @media (max-width: 900px) {
+    .hero { min-height: 0; }
+    .hero-inner { grid-template-columns: 1fr; gap: 4rem; }
+    .hero-title { max-width: 10em; }
+    .workbench { margin: 0 auto; max-width: 600px; width: 100%; }
+  }
+  @media (max-width: 520px) {
+    .hero { background-size: 22px 22px; }
+    .hero-cta { flex-wrap: wrap; }
+    .workbench { min-height: 365px; }
+    .workbench-cards { min-height: 325px; }
+    .workbench-card { min-height: 136px; padding: 0.75rem; width: 52%; }
+    .workbench-card strong { font-size: 1.18rem; }
+    .card-1 { left: 0; }
+    .card-2 { right: 0; }
+    .card-3 { bottom: 0; left: 4%; }
+    .card-4 { bottom: 0.8rem; right: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .workbench-card { transition: none; }
   }
 </style>

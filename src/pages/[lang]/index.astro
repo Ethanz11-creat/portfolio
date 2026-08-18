@@ -23,10 +23,31 @@ const tools = (await getCollection('tools', ({ id }) => id.startsWith(locale + '
 const posts = (await getCollection('blog', ({ id }) => id.startsWith(locale + '/')))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+const workbenchItems: Array<{
+  title: string;
+  label: string;
+  href: string;
+  tone: 'lime' | 'butter' | 'lavender' | 'paper';
+  external?: boolean;
+}> = [
+  ...projects.slice(0, 2).map((entry, index) => ({
+    title: entry.data.title,
+    label: locale === 'zh' ? `PROJECT / 0${index + 1}` : `PROJECT / 0${index + 1}`,
+    href: `/${locale}/projects/${entry.id.split('/')[1]}/`,
+    tone: index === 0 ? ('lime' as const) : ('paper' as const),
+  })),
+  ...tools.slice(0, 2).map((entry, index) => ({
+    title: entry.data.title,
+    label: locale === 'zh' ? `TOOL / 0${index + 1}` : `TOOL / 0${index + 1}`,
+    href: entry.data.github ?? `/${locale}/#projects`,
+    tone: index === 0 ? ('butter' as const) : ('lavender' as const),
+    external: Boolean(entry.data.github),
+  })),
+];
 ---
 <BaseLayout title={t(locale, 'hero.role')}>
   <Nav locale={locale} />
-  <Hero locale={locale} />
+  <Hero locale={locale} workbenchItems={workbenchItems} />
   <main>
     <section id="projects" class="section">
       <div class="container">
@@ -62,6 +83,19 @@ const posts = (await getCollection('blog', ({ id }) => id.startsWith(locale + '/
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
+  }
+  :global(.project-grid .project-card) {
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+  }
+  :global(.project-grid .project-card:first-child) {
+    background: var(--paper);
+  }
+  :global(.tools-grid .tool-card) {
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    box-shadow: 3px 3px 0 rgba(23, 32, 25, 0.18);
   }
   .tools-grid {
     display: grid;

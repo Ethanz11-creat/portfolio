@@ -1,16 +1,21 @@
 :root {
-  --bg: #fafaf8;
-  --ink: #111111;
-  --ink-secondary: #666666;
-  --accent: #4f7cff;
-  --accent-deep: #3a5fe0;
-  --line: #e5e5e0;
-  --surface-soft: #f2f2ee;
-  --dark: #0e0e0e;
-  --radius: 14px;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --bg: #f7f5ed;
+  --paper: #fffdf7;
+  --ink: #172019;
+  --ink-secondary: #5d665d;
+  --accent: #d66af5;
+  --accent-deep: #3b493d;
+  --lime: #d8ff9c;
+  --butter: #ffd45b;
+  --lavender: #d8b2ff;
+  --line: #cfcfc3;
+  --surface-soft: #efeee5;
+  --dark: #172019;
+  --radius: 5px;
+  --shadow: 4px 5px 0 rgba(23, 32, 25, 0.13);
   --font-sans: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', 'PingFang SC', sans-serif;
+  --font-display: Georgia, 'Songti SC', 'STSong', serif;
+  --font-mono: 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
   --container: 1200px;
   --space-section: clamp(6rem, 10vw, 10rem);
 }
