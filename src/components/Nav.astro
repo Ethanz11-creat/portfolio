@@ -32,6 +32,8 @@ const links = [
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  // 非首页（无 Hero 深色区）时直接进入 scrolled 态，避免透明导航压浅色背景
+  if (!document.querySelector('.hero')) nav?.classList.add('scrolled');
 </script>
 
 <style>
@@ -55,10 +57,14 @@ const links = [
     height: 64px;
   }
   .logo {
+    color: #f5f5f2;
     font-family: var(--font-display);
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+  }
+  .nav.scrolled .logo {
+    color: var(--ink);
   }
   .logo .dot {
     color: var(--accent);
@@ -70,11 +76,23 @@ const links = [
     font-size: 0.95rem;
   }
   .nav-links a {
-    color: var(--ink-secondary);
+    color: rgba(245, 245, 242, 0.85);
     transition: color 0.2s;
   }
   .nav-links a:hover {
+    color: #f5f5f2;
+  }
+  .nav.scrolled .nav-links a {
+    color: var(--ink-secondary);
+  }
+  .nav.scrolled .nav-links a:hover {
     color: var(--ink);
+  }
+  .nav.scrolled :global(.lang-switch a) {
+    color: var(--ink-secondary);
+  }
+  .nav.scrolled :global(.lang-switch a.active) {
+    color: var(--accent-deep);
   }
   @media (max-width: 640px) {
     .nav-links {
