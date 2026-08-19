@@ -1,0 +1,25 @@
+---
+title: dsh-billing-tui
+subtitle: DeepSeek Harness 峰谷计费 TUI 插件——实时监听 token 用量、计算费用，并生成持久化 ASCII 账单小票
+order: 3
+tags: [TypeScript, DeepSeek Harness, TUI, npm, dsh-plugin]
+github: https://github.com/Ethanz11-creat/dsh-billing-tui
+npm: https://www.npmjs.com/package/dsh-billing-tui
+year: '2026'
+---
+
+## 做什么
+
+一个面向 DeepSeek Harness（DSH）的计费插件：按 DeepSeek 官方峰谷定价计算当前会话费用，在 TUI 状态栏实时显示累计费用，并通过 `/billing` 生成鲸鱼 ASCII 账单小票；同时支持 Web UI。
+
+## 已发布与社区
+
+- `dsh-billing-tui@0.1.0` 已发布至 npm，可通过 `dsh plugin add dsh-billing-tui` 安装
+- 已向 awesome-deepseek-harness 提交 Dashboard & Session UX 分类的收录 PR（#413，待维护者合并）
+- 已在 DeepSeek Harness 官方仓库的 “Show Your Plugins!” Discussions 发布项目介绍（#3307）
+
+## 技术要点
+
+- 订阅会话事件并累积输入、输出、缓存命中与推理 token；fork 新会话时继承父会话用量
+- 以北京时间判断峰谷时段，按官方价表结算，仅对已支持的 DeepSeek 模型计费
+- 提供 `/billing`、`show_billing` 与 `check_pricing_period`，并对重复快照去重，避免重复贴票

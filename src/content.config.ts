@@ -24,6 +24,7 @@ const tools = defineCollection({
     order: z.number(),
     tags: z.array(z.string()),
     github: z.string().optional(),
+    npm: z.string().optional(),
     year: z.string(),
   }),
 });
