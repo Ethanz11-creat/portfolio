@@ -6,6 +6,7 @@ import '@fontsource/space-grotesk/500.css';
 import '@fontsource/space-grotesk/600.css';
 import '@fontsource/space-grotesk/700.css';
 import '../styles/global.css';
+import CustomCursor from '../components/CustomCursor.astro';
 import Motion from '../components/Motion.astro';
 import { getLangFromUrl } from '../lib/i18n';
 
@@ -29,5 +30,6 @@ const lang = getLangFromUrl(Astro.url);
   <body>
     <slot />
     <Motion />
+    <CustomCursor />
   </body>
 </html>

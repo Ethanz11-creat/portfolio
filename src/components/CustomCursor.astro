@@ -1,0 +1,120 @@
+---
+---
+
+<div class="custom-cursor" aria-hidden="true">
+  <span class="cursor-core"></span>
+</div>
+
+<script>
+  const cursor = document.querySelector<HTMLElement>('.custom-cursor');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (cursor) {
+    const interactiveSelector = 'a, button, input, select, textarea, label, [role="button"]';
+    let active = false;
+
+    const setPosition = (event: PointerEvent) => {
+      cursor.style.setProperty('--cursor-x', `${event.clientX}px`);
+      cursor.style.setProperty('--cursor-y', `${event.clientY}px`);
+      cursor.classList.add('is-visible');
+      document.body.classList.add('cursor-ready');
+    };
+
+    const setInteractiveState = (target: EventTarget | null) => {
+      const isInteractive = target instanceof Element && Boolean(target.closest(interactiveSelector));
+      cursor.classList.toggle('is-active', isInteractive);
+    };
+
+    const onPointerOver = (event: PointerEvent) => setInteractiveState(event.target);
+    const onPointerDown = () => cursor.classList.add('is-pressed');
+    const onPointerUp = () => cursor.classList.remove('is-pressed');
+    const hide = () => cursor.classList.remove('is-visible');
+
+    const enable = () => {
+      if (active || !finePointer.matches || reducedMotion.matches) return;
+      active = true;
+      window.addEventListener('pointermove', setPosition, { passive: true });
+      document.addEventListener('pointerover', onPointerOver, { passive: true });
+      window.addEventListener('pointerdown', onPointerDown, { passive: true });
+      window.addEventListener('pointerup', onPointerUp, { passive: true });
+      window.addEventListener('blur', hide);
+    };
+
+    const disable = () => {
+      if (!active) return;
+      active = false;
+      document.body.classList.remove('cursor-ready');
+      cursor.classList.remove('is-visible', 'is-active', 'is-pressed');
+      window.removeEventListener('pointermove', setPosition);
+      document.removeEventListener('pointerover', onPointerOver);
+      window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('blur', hide);
+    };
+
+    const update = () => (finePointer.matches && !reducedMotion.matches ? enable() : disable());
+    finePointer.addEventListener('change', update);
+    reducedMotion.addEventListener('change', update);
+    update();
+  }
+</script>
+
+<style>
+  .custom-cursor {
+    --cursor-x: -100px;
+    --cursor-y: -100px;
+    align-items: center;
+    background: rgba(255, 253, 247, 0.18);
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    display: flex;
+    height: 30px;
+    justify-content: center;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-50%, -50%);
+    transition: width 160ms ease, height 160ms ease, background 160ms ease, border-color 160ms ease, opacity 120ms ease, transform 80ms linear;
+    width: 30px;
+    z-index: 1000;
+  }
+
+  .cursor-core {
+    background: var(--accent);
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    height: 6px;
+    transition: transform 160ms ease;
+    width: 6px;
+  }
+
+  .custom-cursor.is-visible {
+    opacity: 1;
+  }
+
+  .custom-cursor.is-active {
+    background: var(--lime);
+    border-color: var(--ink);
+    height: 52px;
+    width: 52px;
+  }
+
+  .custom-cursor.is-active .cursor-core {
+    transform: scale(0.65);
+  }
+
+  .custom-cursor.is-pressed {
+    height: 22px;
+    width: 22px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    :global(body.cursor-ready),
+    :global(body.cursor-ready *) {
+      cursor: none !important;
+    }
+  }
+</style>
