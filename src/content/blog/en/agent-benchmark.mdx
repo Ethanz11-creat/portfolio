@@ -1,32 +1,151 @@
 ---
 title: How to Use Benchmarks When Building Agents
-description: A benchmark is not an exam — it is an answer bank. Read leaderboards to choose, copy scoring methods to build your own eval set, slice to diagnose
+description: A benchmark is not an exam — it is an answer bank. Read leaderboards to choose, copy scoring methods to build your own eval set, slice to diagnose — turning "it feels better" into "score 61 → 68"
 date: 2026-07-08
 tags: [Agent, Benchmark, Evaluation]
 ---
 
-## The problem
+## The problem: you changed it, but do you know it's better?
 
-Almost every agent-building team has lived this loop: change a version, manually try three or five cases, it feels better, ship it. Two days later a user reports a new badcase, patch it again.
+Almost every agent-building team has lived this loop: change a version, manually try three or five cases, it feels better, ship it. Two days later a user reports a new badcase, patch it again, try a few cases. Back and forth — the system looks like it's improving, but nobody can say whether it's better or worse overall.
 
-The problem is not that the changes are slow — it is that there is **no coordinate system**: you cannot tell whether a change made the system better or worse overall, nor which segment of the pipeline broke. It all reduces to one question: **how does an agent know it did the right thing?**
+The problem is not that the changes are slow — it is that there is **no coordinate system**:
+
+- You can't tell whether a change made the system **better or worse overall** — the three or five cases you tried by hand may have all happened to be covered by this version; the parts you broke haven't been hit yet.
+- You can't tell **which segment of the pipeline** broke — a user reports a badcase and you guess along the whole chain: was it misunderstood, was retrieval wrong, or did the final verification fail?
+
+It all reduces to one question: **how does an agent know it did the right thing?**
 
 ## The right path: flip the loop
 
-First define what "good" means (an eval set + scoring criteria), then regress every change against the eval set. The smallest unit of change is no longer "changed a feature" but "eval score 61 → 68, zero regressions".
+The instinctive way is to change a feature first, then accept it by feel. The right path is the opposite — **first define what "good" is, then regress every change against that "good"**.
+
+1. Build a small but **real eval set**: distill every badcase and each core scenario into a "input → expected behavior" record.
+2. Define **executable scoring criteria**: only when you can say what "correct" means can you score each step 1/0 or 0–1.
+3. **Regress every change** against this eval set.
+
+After a change, the smallest unit is no longer "changed a feature, feels fine" but **"eval score 61 → 68, zero regressions"**. With that baseline, right vs. wrong, better vs. worse, is obvious at a glance.
 
 ## Three things to take from public benchmarks
 
-1. **Read leaderboards to choose**: compare models and approaches
-2. **Copy scoring methods**: borrow public benchmark criteria to build your own eval set
-3. **Slice to diagnose**: when something breaks, decompose a single run into nodes and localize the fault
+The key insight: **a benchmark is not an exam — it is an answer bank**. You don't need to invent an evaluation methodology from scratch. SWE-bench's run files, coding benchmarks' verifiers, dialogue benchmarks' scoring rubrics — these are already answers that others dug for, ready to pull apart, copy, and adapt.
+
+Treating a benchmark as an answer bank, you can take three things from it:
+
+### One: read leaderboards to choose — compare models and approaches
+
+A leaderboard is a controlled experiment someone already ran across a batch of candidates. When choosing, don't stare at the overall score — filter by dimension relevant to your use:
+
+- **Filter by task type**: if you build for coding, don't let the top conversational model drag you off — look at the coding and retrieval subscores.
+- **Weigh regressions and failure modes**: two models with similar totals, look at which cases each trips on — one is steady but conservative, one is aggressive but occasionally spits out nonsense. You want the one whose risk profile matches your business.
+- **Beware score saturation**: when the top of the board is compressed, running the same agent on your own small eval set often separates models better than the leaderboard does.
+
+### Two: copy scoring methods — turn a public benchmark into your own eval set
+
+A public benchmark's most valuable part is often not its score but its **scoring method** — it's portable and reproducible. "Copy" doesn't mean copy the questions, it means copy "how to judge":
+
+- **Copy the verification style**: coding benchmarks grade with test cases, so you can write assertions for your key outputs; dialogue benchmarks grade with a scoring model, so you can wrap your judging step in a "checklist scoring" pass.
+- **Copy the granularity**: good benchmarks don't just have a total — they have subsystem scores. Your eval set should surface "how well did understanding / retrieval / verification each score," not a single pass/fail.
+- **Copy the case construction**: see how a benchmark grows a base case into "ambiguous / missing-info / needs-clarification" variants, and use the same move to pile illegal and edge inputs onto your own work.
+
+### Three: slice to diagnose — when things break, decompose the run into nodes and localize
+
+The eval set answers "**is it good or not**"; you still need a tool that answers "**where it's broken**". Every time a badcase appears, decompose that single run into nodes and check each against the scoring criteria:
+
+- Pull the run's **node trace** (next section), each node carrying its input, output, latency, and tools called.
+- **Bisect to locate**: first check whether the output end is wrong, then work backwards to see which of "planning / retrieval / understanding" already baked in the error. Usually 80% of bad cases are already broken when passed downstream — fixing later can't recover them.
+- **Bookkeep by node**: score each node independently. The segment with the low score is the "minimal verifiable unit" you should touch this time — change it, and only that link's score moves, rather than re-testing the whole chain.
 
 ## The 7 nodes of a single execution
 
-Any agent system — regardless of framework or model — can decompose a single request into 7 nodes: input understanding & clarification, retrieval/tool calls, context assembly, reasoning & planning, execution, result verification, output. Each node has typical failure modes — asking nothing when it should, charging ahead with ambiguous requirements, irrelevant retrieval, missing verification that lets hallucinations through.
+Slicing depends on a stable coordinate system. Any agent system — regardless of framework or model — can decompose a single request into the 7 nodes below. If you add hooks (logging inputs/outputs, scoring) to each node while building, diagnosing gets a grip.
+
+| Node | What it does | Typical failure mode |
+| --- | --- | --- |
+| ① Input understanding & clarification | Reads a vague request into a clear intent; asks when info is missing | Doesn't ask when it should; charges ahead on ambiguous requirements |
+| ② Retrieval / tool calls | Gets material or capability from outside | Irrelevant retrieval; wrong tool or parameters called |
+| ③ Context assembly | Fits results, history, and constraints into something the model can read | Useful stuff squeezed out, useless stuff crammed in; context too long |
+| ④ Reasoning & planning | Decides what to do next, how many steps, in what order | Executes without planning; plans but contradicts retrieved info |
+| ⑤ Execution | Writes to a store, calls an API, writes files, runs tools | Side effects without confirmation; results not written back to state |
+| ⑥ Result verification | Self-checks what it produced, reworks if needed | No verification; hallucination passed straight to the answer |
+| ⑦ Output | Shapes the result into the format the user wants | Wrong format; key info lost in the intermediate steps |
+
+Hold these 7 rows up to the old problem: a user reports "answer is wrong" — stop guessing along the whole chain. First look at ⑥ verification and ⑦ output to see if they were judged at all; then look back at ④ planning to see if the understanding was off from the start. **Only when every row can be scored independently can you call it "localization."**
+
+## Six open-source benchmarks you can copy directly: every failure has a ready answer
+
+How do you quantify each of the seven failure modes? The strongest answers live in public benchmarks. These six cover the most ground, score the most mechanically, and are the most worth copying:
+
+| Group | Open-source repo | Main node tested | Scoring method (trust chain) |
+| --- | --- | --- | --- |
+| **τ²-bench** | [sierra-research/tau2-bench](https://github.com/sierra-research/tau2-bench) | ① clarification + ④ policy-guided tools | **executable state comparison** |
+| **RAGAS** | [explodinggradients/ragas](https://github.com/explodinggradients/ragas) | ② retrieval & assembly | LLM judging (recall/precision/faithfulness) |
+| **CRAG** | [facebookresearch/CRAG](https://github.com/facebookresearch/CRAG) | ② retrieval (incl. false premise) | 3-value scoring (+1 / 0 "don't know" / −1) |
+| **PlanBench** | [karthikv792/LLMs-Planning](https://github.com/karthikv792/LLMs-Planning) | ④ planning | **executable verification** (VAL, zero LLM judging) |
+| **BFCL** | [ShishirPatil/gorilla](https://github.com/ShishirPatil/gorilla) | ④ tool calls (incl. irrelevance) | **AST comparison** |
+| **TRAIL** | [patronus-ai/trail-benchmark](https://github.com/patronus-ai/trail-benchmark) | ⑤⑥ process & verification | LLM judging (and unreliable, see below) |
+| **SWE-bench** | [princeton-nlp/SWE-bench](https://github.com/princeton-nlp/SWE-bench) | ⑥⑦ result verification | **executable verification** (FAIL_TO_PASS + PASS_TO_PASS both green) |
+
+Behind all of these runs one trust ordering — memorize it before you copy anything:
+
+> **Executable verification (tests / state comparison) > exact match > AST structural match > rule assertions > LLM-as-judge**
+
+The first four are "dead code" judging: zero cost, zero variance, run 10,000 times and you get one answer; an LLM judge's mood changes each run. **The principle: use dead code whenever you can, and leave LLM judging only to the semantic judgments that nothing else can make.** The designs most worth copying, one at a time:
+
+- **τ²-bench** (1.5k★) tests "does it ask the right questions and hold up against a user trying to fool it." The three-piece setup: a **policy** doc that doubles as the syllabus, a **stateful database** (db.json) as the exam room, and a **user simulator** as the scene partner — the simulator is instructed to reveal information progressively (won't say until asked) and even to induce the agent to break policy. Scoring is the product `reward = DB × COMMUNICATE`: the DB term replays the reference actions to get a "gold terminal state" and hash-compares it against the state the agent actually produced — **any action sequence reaching an equivalent final state counts: judge the result, not the path**.
+- **RAGAS** (14.7k★) is a ready-made metric set, four that hold each other in check: `context recall` (did what should come in come in), `context precision` (is everything that came in useful), `faithfulness` (can each claim in the answer be supported by the context), `answer relevancy`. The first two grade node ② itself; the last two grade the conduction from ② to ⑥.
+- **CRAG** (Meta) brings the insight that **RAG failures aren't evenly distributed**: long-tail entities + real-time info + multi-hop are the danger zones, so an eval set must be explicitly stratified to expose weaknesses. Its scoring is the most worth stealing: a four-tier rating folds into three values, **wrong −1, right +1, honestly saying "don't know" gets 0 — making honesty strictly better than fabrication**. It also has a dedicated `false_premise` type whose correct answer is "the question is invalid" — the category most self-built evals forget.
+- **PlanBench** tests the base model's "plan steps" ability, not the agent. Because Blocksworld has a formal definition (PDDL), correctness is judged mechanically by the symbolic verifier **VAL**: actually execute the plan and check that each precondition holds and the goal state is reached — **whether it matches the gold plan is irrelevant; zero LLM judging**. It also ships a **reskins exam** (all words swapped, logic untouched) built to expose "scoring by familiarity." For any business planning with formal rules — approval flows, scheduling, routing — you can build a "verifier-graded" planning eval on this model.
+- **BFCL** (12.9k★), the most-cited leaderboard in tool calling, has layers simple / multiple / parallel / **irrelevance** / multi-turn. Two designs worth copying: first, **AST comparison instead of string matching** — equivalent writing is handled by giving each parameter a set of acceptable values (e.g. `"unit": ["units", ""]` both count); second, **irrelevance as a first-class test category** — a user asks for triangle area and the only available function computes BMI; full marks is "call nothing." Most teams test "will it call" but forget "will it refuse," and "calling when it shouldn't" is a top cause of production incidents.
+- **TRAIL** is the newest frontier (2025 onward) and the one with no standard answer: a process eval. It takes 148 traces from real GAIA and SWE-bench executions, has humans label 841 errors at span level, builds an **Agent error taxonomy** (reasoning / system-execution / planning-coordination), then asks an LLM to "read the trace, find all the errors, classify them, pin their location." But per its README, the best model scores only **about 11% accuracy** — **"LLM reads a trace and finds errors" is itself not yet reliable**, so process evals must be dead-code-backed with LLM only at the tail. It also throws in an error-classification dictionary you can use to label your own traces.
+- **SWE-bench** (5.3k★, most widely used for coding agents) reverse-engineers tasks from real PRs in 12 popular Python repos: take an "issue + fixing PR" pair, roll the repo back before the PR, and let the agent fix it. Judging can't be gamed: **FAIL_TO_PASS** (fails before the PR, passes after = it really fixed the issue) + **PASS_TO_PASS** (passed before and after = it didn't break anything else); **both green counts as resolved**. The gold patch is a one-liner, but judging never compares patch text — only the two test groups' colors: **judge the effect, not the writing**, the same philosophy as τ²'s state comparison.
+
+## When the eval thinking lives in code: deer-flow
+
+Someone took these "how to build a ruler" ideas and **built them directly into the runtime**. **deer-flow** (ByteDance open-source, 76.2k★, [bytedance/deer-flow](https://github.com/bytedance/deer-flow)) started as a classic multi-agent pipeline and was rebuilt in 2026 as one lead agent + about 30 middlewares that each own one concern. The neat part: **the 30 middleware filenames are themselves a "problem list."**
+
+```text
+backend/packages/harness/deerflow/agents/middlewares/
+├── clarification_middleware.py        # N1 clarify & wait for the user
+├── dynamic_context_middleware.py      # N2 dynamic context
+├── summarization_middleware.py        # N2 history compression
+├── token_budget_middleware.py         # N5 token budget
+├── todo_middleware.py                 # N3 plan management
+├── loop_detection_middleware.py       # N5 infinite-loop breaker
+├── read_before_write_middleware.py    # N5/N4 read before write
+├── subagent_limit_middleware.py       # N5 concurrency cap
+├── dangling_tool_call_middleware.py   # N4 dangling-call repair
+└── ... (about 30 total)
+```
+
+The most instructive piece is its **goal loop** (`runtime/goal.py`): after each round, a **separate independent LLM evaluator** checks one fixed question — "is it actually done?" The evaluator prompt is a textbook example of anti-self-deception:
+
+> "You are a strict completion evaluator … Decide whether the active goal is fully satisfied **using ONLY the visible conversation evidence**. Do not assume files, commands, tests, or external state changed unless the conversation explicitly shows it. If the visible evidence is too weak to prove progress, **fail closed** with blocker missing_evidence."
+
+Two keywords: **strict** (judge hard) and **fail closed** (when evidence is thin, judge it failed rather than passing it). And it never asks the LLM "was there progress" — LLM wording differs every time, so comparison is unreliable — instead code computes a fingerprint of the most recent user-visible output, and two identical fingerprints mean no progress. **The LLM judges semantics; code judges facts; each minds its own lane.**
+
+## Zooming out: the same benchmarks play different roles across stages
+
+- **① Selection · read the leaderboard**: a base model's release notes always carry SWE-bench Verified and tool-calling scores, meant for downstream selection — to rule out clearly weak models (and to pick a judge model). Only for elimination, never for prediction — the leaderboard environment differs from your toolset and business distribution.
+- **② Design · define the eval before building**: Sierra (maker of τ-bench) first defined "what makes a good support agent" as a benchmark, then iterated its product against that ruler; TRAIL is Patronus open-sourcing its own trace-labeling methodology. **Thinking through a benchmark's design feeds back into the architecture** — having seen irrelevance, you leave a path for "don't call tools"; having seen state-comparison scoring, you design verifiable state into your tool returns.
+- **③ Iteration · a case study in engineering**: **OpenHands** (84k★, [OpenHands/OpenHands](https://github.com/OpenHands/OpenHands), eval repo [OpenHands/benchmarks](https://github.com/OpenHands/benchmarks)) splits eval out into a standalone repo whose README declares itself "standardized evaluation pipelines for testing agent capabilities across various real-world tasks." Two engineering details carry more value than the list itself: the agent SDK is **pinned to a commit via git submodule** — every eval result maps to one reproducible code version; score and version are tightly bound — no score without a known origin.
+- **④ Maturity · public ruler for external anchoring**: once your own eval set takes over daily regression, public benchmarks keep one role — horizontal anchoring on a major version change (new base model, harness rewrite) for others to align with. **UI-TARS** (ByteDance GUI agent) compares OSWorld and AndroidWorld scores across releases.
+
+## A complete worked example
+
+To string this together, walk through one complete "benchmark-driven improvement" loop:
+
+1. **On launch day a user reports a badcase**: asked "high-speed rail from Hangzhou to Shanghai today," the agent handed over a booking link without confirming the train first.
+2. **Distill into the eval set**: add a record `{"input": "high-speed rail from Hangzhou to Shanghai today", "expected": "clarify first: stations, departure window, whether to include all trains today"}`.
+3. **Score against the 7 nodes**: say node ① input understanding gets a 0 — it should have clarified but didn't.
+4. **Only change that segment's minimal unit**: add a "clarify when origin/destination is unclear" constraint to the understanding stage, rather than reordering the whole pipeline.
+5. **Regress the eval set**: this record goes 0 → 1 while the existing 60 still pass, "total 61 → 63, zero regressions." Only ship once you've confirmed nothing else broke.
+
+An iteration becomes a reproducible, rollbackable, attributable action. Once this loop is routine, the accumulated eval set becomes your team's most valuable asset — **it records the consensus of "what counts as correct,"** and outlives any single model version.
 
 ## Lessons from practice
 
-- An eval set is never built once: every badcase you find gets distilled into it
-- Scoring criteria must be executable: only when you can say what "correct" means do changes have direction
-- Iteration without a coordinate system only looks like progress
+- **An eval set is never built once**: every badcase you find gets distilled into a record; it grows with the system, not something you slap together once before launch.
+- **Scoring criteria must be executable**: only when you can say what "correct" means do changes have direction; if you can't, every change is just feel.
+- **A benchmark is an answer bank, not an exam**: learn to use others' first, then copy their scoring to build your own — don't reinvent the wheel from zero.
+- **Iteration without a coordinate system only looks like progress** — it feels busy, but you're really just running in place.

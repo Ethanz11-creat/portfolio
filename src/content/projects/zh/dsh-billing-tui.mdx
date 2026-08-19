@@ -1,0 +1,46 @@
+---
+title: dsh-billing-tui
+subtitle: DeepSeek Harness 峰谷计费 TUI 插件——实时监听 token 用量、计算费用，生成持久化 ASCII 账单小票
+order: 5
+featured: true
+tags: [TypeScript, DeepSeek Harness, TUI, npm, dsh-plugin]
+github: https://github.com/Ethanz11-creat/dsh-billing-tui
+npm: https://www.npmjs.com/package/dsh-billing-tui
+year: '2026'
+metrics:
+  - value: '实时'
+    label: 费用监控
+  - value: 'op'
+    label: 峰谷分时计价
+  - value: '2'
+    label: TUI/Web 双形态
+---
+
+## 一句话定位
+
+一个面向 **DeepSeek Harness（DSH）** 的计费插件：按 DeepSeek 官方峰谷定价计算当前会话费用，在 TUI 状态栏实时显示累计费用，并通过 `/billing` 生成一张鲸鱼 ASCII 账单小票；同时提供 Web UI。
+
+## 做什么
+
+- **实时 token 监控**：监听 DS Harness 的 token 用量，按 **DeepSeek 官方峰谷分时定价**（高峰/低谷费率不同）换算成费用。
+- **TUI 状态栏集成**：费用累计值直接显示在 DSH 的 TUI 状态栏，编码时随时可见、心里有数。
+- **账单小票**：输入 `/billing` 输出一张格式化的鲸鱼 ASCII 小票——把"我花了多少钱"变成可留存、可分享的视觉凭证。
+- **Web UI**：同一套计费逻辑再暴露一层网页，满足非终端场景查看。
+
+## 怎么用 AI 做的
+
+这是我自己 vibe coding 的产物，也是 **LLM tool/API 数字接口设计**的练习：
+
+- 面向 DSH 的插件开发，遵循其 `dsh-plugin` 的接口约定，做好生命周期与事件钩子。
+- 按官方定价表建模峰谷计费逻辑，处理分时费率切换与累计统计。
+- 发布 `npm` 包，提供 **GitHub 源码 + npm 安装**双入口，完整走通一个开源小工具从代码到分发的闭环。
+
+## 技术要点
+
+- TypeScript，DSH 插件开发，npm 包发布
+- 峰谷分时计价模型；TUI + Web 双形态渲染
+- ASCII 小票生成（持久化、可留存）
+
+## 收获
+
+dsh-billing-tui 代表了我"用 AI 快速把一个真实想法做成可用工具"的能力：一个能放进别人工具链、有明确定价逻辑、有 npm 分发的完整小工具，完全是实习之余自己 vibe coding 出来的。

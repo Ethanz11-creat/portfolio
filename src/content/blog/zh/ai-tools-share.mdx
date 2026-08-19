@@ -1,0 +1,44 @@
+---
+title: 我实践过的 12 个 AI 工具与用法
+description: 从画图、浏览器操作到数据取数——按通用篇 / 司内篇分类，把我亲手用过的 AI 工具和玩法记录下来
+date: 2026-07-22
+tags: [AI-Coding, 工具, MCP, 实践]
+---
+
+这篇按"通用篇 / 司内篇"记录我亲手实践过的 AI 工具与真实用法——不是收藏夹，是每个都真正跑通过、踩过坑的清单。
+
+## 通用篇
+
+**[drawio-skill](https://github.com/Agents365-ai/drawio-skill)**：给 Claude Code 装上的画图技能，说需求就能生成 draw.io 格式的架构/流程/UML 图。内置 10,000+ 官方图形库，能从代码生成模块依赖图，导出的 PNG 内嵌可编辑 XML——发图给同事用 draw.io 打开还能继续改。我的技术分享里那张「评测导向 Agent 迭代全景图」就是它画的，从描述到成图不到十分钟。
+
+**Playwright MCP**：微软开源的浏览器自动化 MCP，让 AI 自己打开真实浏览器点击、填表、登录、截图。AI 看到的是结构化快照而非猜 HTML，能处理登录态、多标签页。这是我调用最多的工具（几千次），典型场景：网页信息核对、自动化登录、给爬虫做登录状态守护。
+
+**微信公众号爬取（we-mp-rss）**：把选定公众号文章自动抓成带元数据的 Markdown 本地语料库。订阅了 10 个大厂技术号、500+ 篇文章，下游长出两个应用——写 SOP 时的参考库、以及定时推送到 D-Chat 的公众号资讯 bot。这是"数据资产型"工具：建一次，长一片。
+
+**cmux**：专为"并行跑多个 AI coding agent"设计的 macOS 终端。Agent 感知通知（哪个 AI 需要你时面板亮红圈、系统弹通知），垂直标签页显示 git 分支/PR/端口，内嵌可编程浏览器验证前端。同时跑 2~3 个任务靠通知调度注意力，不用轮询。
+
+**[karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)**：源自 Karpathy 的 65 行 CLAUDE.md 行为准则——想清楚再动手、只做要求的、只改该改的、按可验证目标干，正好对着 AI 编码四个坏习惯。合进项目根目录就生效，让 diff 更干净、好 review。
+
+**ui-ux-pro-max**：给 AI Coding 工具装的 UI/UX 技能，内置可检索的界面风格/配色/字体/交互/无障碍规范。最有价值的不是"生成漂亮页面"，而是把 UI 开发从"代码差不多"变成：设计规范 → 组件实现 → 状态验证 → 真机截图 → 叠图找差异 → 修正交付。
+
+**mcp-server-chart**：蚂蚁 AntV 官方的图表生成 MCP，25+ 种图表类型，AI 传数据和标题就返回专业配色的图（中文完美支持），支持私有化部署。和数据库 MCP 组成"查数 → 出图"闭环，从提问到拿图不到一分钟。
+
+**[mcp-toolbox](https://github.com/googleapis/mcp-toolbox)**：Google 官方的数据库 MCP 网关，一个二进制接 Postgres/MySQL/SQLite/BigQuery 等 30+ 数据源。核心是"工具是配置出来的"：在 tools.yaml 把 SQL 固化成参数化工具（比如"按城市查订单"只留 city 参数），AI 只能填参数碰不到 SQL，权限边界由 DBA 定。自带 Web UI 调试台先测通再接 agent。
+
+**MindsDB**：开源联邦查询引擎，把几百种数据源统一成"一个大数据库"，一条 SQL 跨源 JOIN。`CREATE DATABASE` 一条 SQL 挂数据源，内置 MCP server 让 agent 能查遍所有数据源。
+
+**[Cube](https://github.com/cube-js/cube)**：开源语义层（Semantic Layer），先用 YAML 把指标口径定义好（GMV/客单价怎么算），AI 和 BI 都通过它查数——数字口径统一、带权限治理。查询不碰 SQL，"要 total_gmv 按 city 拆"，SQL 由语义层自动生成且透明可查。
+
+**Grill-me**：让 AI 通过连续追问把模糊想法压实成清晰需求。一次只问一个关键问题，按决策树推进，先逼出隐含假设、取舍和非目标，再进 spec/PRD。测过 MHD 监控中心这个真实模糊需求，表现得像真实 PM 访谈——先判断问题本质，再收敛出"执行中车辆—任务疑似失联"的具体场景。
+
+## 司内篇
+
+**dws CLI**：内部命令行，以本人身份拉取 D-Chat 群聊/私聊历史消息，导出成结构化文本。配合 D-Chat 群机器人 Webhook，AI 的分析还能自动推回群里。新进项目群信息量大时，让 agent 结合 PRD 一起理解分析。
+
+**datatools**：SkillsHub 官方的"数易取数分析"技能，说一句"查数据集 XXX 近 7 天各渠道 GMV"，AI 自动查数易、读 Cooper 表格、跑 SQL、下载报表并给分析结论。把数易/Cooper/本地 Excel 收敛成一个入口，SQL 执行/表格下载这类轮询任务内置超时与自动等待，周报多份数据并行一次出汇总。
+
+## 体会
+
+- **数据资产型工具 > 一次性工具**：we-mp-rss、mcp-toolbox 这类建一次、能长出多个下游的，价值远高于用完即弃的。
+- **把"权威"交出去**：数据口径交给 Cube、SQL 边界交给 mcp-toolbox 的配置，AI 和人都只是调用方，风险大幅收敛。
+- **工具要能自成闭环**：数据库 MCP + 图表 MCP、"查数 → 出图 → 贴周报"，单点工具连成线才有生产力。

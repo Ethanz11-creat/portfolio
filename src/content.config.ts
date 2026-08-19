@@ -16,19 +16,6 @@ const projects = defineCollection({
   }),
 });
 
-const tools = defineCollection({
-  loader: glob({ pattern: '**/*.mdx', base: './src/content/tools' }),
-  schema: z.object({
-    title: z.string(),
-    subtitle: z.string(),
-    order: z.number(),
-    tags: z.array(z.string()),
-    github: z.string().optional(),
-    npm: z.string().optional(),
-    year: z.string(),
-  }),
-});
-
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/blog' }),
   schema: z.object({
@@ -39,4 +26,4 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { projects, tools, blog };
+export const collections = { projects, blog };

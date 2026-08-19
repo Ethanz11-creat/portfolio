@@ -4,7 +4,6 @@ import Nav from '../../components/Nav.astro';
 import Hero from '../../components/Hero.astro';
 import SectionHeader from '../../components/SectionHeader.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import ToolCard from '../../components/ToolCard.astro';
 import BlogCard from '../../components/BlogCard.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection } from 'astro:content';
@@ -18,8 +17,6 @@ const { lang } = Astro.params;
 const locale = (lang === 'en' ? 'en' : 'zh') as 'zh' | 'en';
 const projects = (await getCollection('projects', ({ id }) => id.startsWith(locale + '/')))
   .sort((a, b) => a.data.order - b.data.order);
-const tools = (await getCollection('tools', ({ id }) => id.startsWith(locale + '/')))
-  .sort((a, b) => a.data.order - b.data.order);
 const posts = (await getCollection('blog', ({ id }) => id.startsWith(locale + '/')))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
@@ -28,22 +25,12 @@ const workbenchItems: Array<{
   label: string;
   href: string;
   tone: 'lime' | 'butter' | 'lavender' | 'paper';
-  external?: boolean;
-}> = [
-  ...projects.slice(0, 2).map((entry, index) => ({
-    title: entry.data.title,
-    label: locale === 'zh' ? `PROJECT / 0${index + 1}` : `PROJECT / 0${index + 1}`,
-    href: `/${locale}/projects/${entry.id.split('/')[1]}/`,
-    tone: index === 0 ? ('lime' as const) : ('paper' as const),
-  })),
-  ...tools.slice(0, 2).map((entry, index) => ({
-    title: entry.data.title,
-    label: locale === 'zh' ? `TOOL / 0${index + 1}` : `TOOL / 0${index + 1}`,
-    href: entry.data.github ?? `/${locale}/#projects`,
-    tone: index === 0 ? ('butter' as const) : ('lavender' as const),
-    external: Boolean(entry.data.github),
-  })),
-];
+}> = projects.slice(0, 4).map((entry, index) => ({
+  title: entry.data.title,
+  label: `PROJECT / 0${index + 1}`,
+  href: `/${locale}/projects/${entry.id.split('/')[1]}/`,
+  tone: (['lime', 'butter', 'lavender', 'paper'] as const)[index % 4],
+}));
 ---
 <BaseLayout title={t(locale, 'hero.role')}>
   <Nav locale={locale} />
@@ -54,9 +41,6 @@ const workbenchItems: Array<{
         <SectionHeader num="01" title={t(locale, 'section.projects')} desc={t(locale, 'section.projects.desc')} />
         <div class="project-grid">
           {projects.map((p) => <ProjectCard entry={p} />)}
-        </div>
-        <div class="tools-grid">
-          {tools.map((tool) => <ToolCard entry={tool} />)}
         </div>
       </div>
     </section>
@@ -72,6 +56,131 @@ const workbenchItems: Array<{
     <section id="about" class="section">
       <div class="container">
         <SectionHeader num="03" title={t(locale, 'section.about')} />
+        {locale === 'zh' ? (
+          <div class="about-body">
+            <p class="about-lead">你好，我是赵一恒——厦门大学电子信息类硕士，研究方向 LLM / RAG / Agent。我用 AI 构建 Agent，也构建一切，把「怎么做 Agent」的方法论和作品一起沉淀在这里。</p>
+
+            <div class="about-block">
+              <h3 class="about-h3">教育背景</h3>
+              <ul class="about-edu">
+                <li><strong>厦门大学</strong> · 电子信息类 · 硕士（985）—— LLM / RAG / Agent 方向，2024–2027</li>
+                <li><strong>中国地质大学（武汉）</strong> · 自动化 · 本科（211），2020–2024</li>
+              </ul>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">研究方向</h3>
+              <div class="stack-tags">
+                {['LLM', 'RAG', 'Agent', '安全知识推理', '神经符号检索', '低空经济智能问答'].map((s) => <span class="tag">{s}</span>)}
+              </div>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">学术成果</h3>
+              <div class="achievements">
+                <div class="ach-card">
+                  <span class="ach-type t-paper">综述论文</span>
+                  <h4>低空运行安全的大模型技术综述</h4>
+                  <p>SESC 2026 录用 · 推荐至《系统工程理论与实践》</p>
+                  <span class="ach-status">录用</span>
+                </div>
+                <div class="ach-card">
+                  <span class="ach-type t-soft">软件著作权</span>
+                  <h4>低空经济洞察平台 · 产业政策智能分析系统 V1.0</h4>
+                  <p>《低空经济洞察平台产业政策智能分析系统 V1.0》</p>
+                  <span class="ach-status">登记号 2026SR0424325</span>
+                </div>
+                <div class="ach-card">
+                  <span class="ach-type t-paper">论文 · 在投</span>
+                  <h4>Constraint-Guided Neuro-Symbolic Causal Evidence Subgraph Retrieval for Safety Knowledge Reasoning</h4>
+                  <p>约束引导的神经-符号方法，面向因果证据子图检索</p>
+                  <span class="ach-status">在投</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">下一篇论文的思路</h3>
+              <p class="about-research">面向安全知识推理，用<strong>约束引导的神经-符号方法</strong>做<strong>因果证据子图检索</strong>——在知识图谱上只检索"能支撑结论的因果证据链"，相比传统 RAG 的语义召回，强调证据的<strong>可解释性与可靠性</strong>，与我在 Agent 里坚持的"证据不足即回答=失败"一脉相承。</p>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">技术栈</h3>
+              <div class="stack-group">
+                <p class="stack-label">语言 / 平台</p>
+                <div class="stack-tags">{['Python', 'Swift 6', 'Go', 'TypeScript', 'React'].map((s) => <span class="tag">{s}</span>)}</div>
+                <p class="stack-label">Agent / RAG</p>
+                <div class="stack-tags">{['Tool Calling', 'Memory', 'MCP', 'Skills', 'Eino ADK', 'LangChain', 'FAISS', 'Query Rewrite', '混合召回'].map((s) => <span class="tag">{s}</span>)}</div>
+                <p class="stack-label">评测 / Observability</p>
+                <div class="stack-tags">{['Benchmark 评测', 'LLM-as-Judge', 'HITL', 'OTel', 'Phoenix'].map((s) => <span class="tag">{s}</span>)}</div>
+              </div>
+            </div>
+
+            <p class="about-cta">进一步了解我的背景，见<a href="/resume.pdf" target="_blank" rel="noopener">简历 PDF</a>。</p>
+          </div>
+        ) : (
+          <div class="about-body">
+            <p class="about-lead">Hi, I'm Yiheng Zhao — an MS student in Electronic Information at Xiamen University, researching LLM / RAG / Agent. I build agents with AI, and everything else with AI, distilling both the methodology and the shipped work here.</p>
+
+            <div class="about-block">
+              <h3 class="about-h3">Education</h3>
+              <ul class="about-edu">
+                <li><strong>Xiamen University</strong> · Electronic Information · MS (985) — LLM / RAG / Agent, 2024–2027</li>
+                <li><strong>China University of Geosciences (Wuhan)</strong> · Automation · BS (211), 2020–2024</li>
+              </ul>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">Research interests</h3>
+              <div class="stack-tags">
+                {['LLM', 'RAG', 'Agent', 'Safety reasoning', 'Neuro-symbolic retrieval', 'Low-altitude QA'].map((s) => <span class="tag">{s}</span>)}
+              </div>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">Selected outputs</h3>
+              <div class="achievements">
+                <div class="ach-card">
+                  <span class="ach-type t-paper">Survey</span>
+                  <h4>A Survey of LLM Technologies for Low-Altitude Operation Safety</h4>
+                  <p>Accepted at SESC 2026 · recommended to Systems Engineering — Theory &amp; Practice</p>
+                  <span class="ach-status">Accepted</span>
+                </div>
+                <div class="ach-card">
+                  <span class="ach-type t-soft">Software copyright</span>
+                  <h4>Low-Altitude Economy Insight Platform · Industry-Policy Intelligent Analysis System V1.0</h4>
+                  <p>Software copyright registration</p>
+                  <span class="ach-status">Reg. 2026SR0424325</span>
+                </div>
+                <div class="ach-card">
+                  <span class="ach-type t-paper">Paper · under review</span>
+                  <h4>Constraint-Guided Neuro-Symbolic Causal Evidence Subgraph Retrieval for Safety Knowledge Reasoning</h4>
+                  <p>A constraint-guided neuro-symbolic method for causal evidence subgraph retrieval</p>
+                  <span class="ach-status">Under review</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">Where my next paper is headed</h3>
+              <p class="about-research">For safety knowledge reasoning, a <strong>constraint-guided neuro-symbolic</strong> approach to <strong>causal evidence subgraph retrieval</strong> — retrieving, from a knowledge graph, only the causal evidence chains that actually support a conclusion, prioritizing <strong>explainability and evidence reliability</strong> over plain semantic recall. It follows the same principle I hold in agents: answering without sufficient evidence is a failure.</p>
+            </div>
+
+            <div class="about-block">
+              <h3 class="about-h3">Stack</h3>
+              <div class="stack-group">
+                <p class="stack-label">Languages / Platforms</p>
+                <div class="stack-tags">{['Python', 'Swift 6', 'Go', 'TypeScript', 'React'].map((s) => <span class="tag">{s}</span>)}</div>
+                <p class="stack-label">Agent / RAG</p>
+                <div class="stack-tags">{['Tool Calling', 'Memory', 'MCP', 'Skills', 'Eino ADK', 'LangChain', 'FAISS', 'Query Rewrite', 'Hybrid retrieval'].map((s) => <span class="tag">{s}</span>)}</div>
+                <p class="stack-label">Evals / Observability</p>
+                <div class="stack-tags">{['Benchmark evals', 'LLM-as-Judge', 'HITL', 'OTel', 'Phoenix'].map((s) => <span class="tag">{s}</span>)}</div>
+              </div>
+            </div>
+
+            <p class="about-cta">For my full background, see the <a href="/resume.pdf" target="_blank" rel="noopener">résumé PDF</a>.</p>
+          </div>
+        )}
       </div>
     </section>
   </main>
@@ -92,17 +201,6 @@ const workbenchItems: Array<{
   :global(.project-grid .project-card:first-child) {
     background: var(--paper);
   }
-  :global(.tools-grid .tool-card) {
-    border: 2px solid var(--ink);
-    border-radius: 3px;
-    box-shadow: 3px 3px 0 rgba(23, 32, 25, 0.18);
-  }
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-top: 24px;
-  }
   .blog-list {
     max-width: 760px;
   }
@@ -112,12 +210,92 @@ const workbenchItems: Array<{
     color: var(--accent-deep);
     font-size: 0.95rem;
   }
+  .about-body { max-width: 920px; }
+  .about-lead {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    margin-bottom: 2.5rem;
+    max-width: 30em;
+  }
+  .about-block { margin: 0 0 2.25rem; }
+  .about-h3 {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 1.1rem;
+  }
+  .about-edu { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+  .about-edu li { font-size: 0.95rem; line-height: 1.7; color: var(--ink-secondary); }
+  .about-research { font-size: 1rem; line-height: 1.85; color: var(--ink-secondary); margin: 0; max-width: 44em; }
+  .about-research strong { color: var(--ink); font-weight: 600; }
+  .stack-group { display: flex; flex-direction: column; gap: 0.6rem; }
+  .stack-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin: 0.4rem 0 0;
+  }
+  .stack-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    padding: 0.3rem 0.55rem;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .achievements { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  .ach-card {
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .ach-type {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.5rem;
+    border-radius: 3px;
+  }
+  .t-paper { background: var(--lavender); color: var(--ink); }
+  .t-soft { background: var(--butter); color: var(--ink); }
+  .ach-card h4 { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; line-height: 1.3; letter-spacing: -0.01em; margin: 0; }
+  .ach-card p { font-size: 0.85rem; line-height: 1.6; color: var(--ink-secondary); margin: 0; }
+  .ach-status {
+    margin-top: auto;
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent-deep);
+  }
+  .about-cta { margin-top: 0.5rem; font-size: 0.95rem; color: var(--ink-secondary); }
+  .about-cta a { color: var(--accent-deep); font-weight: 600; }
   @media (max-width: 900px) {
     .project-grid {
       grid-template-columns: 1fr;
     }
-    .tools-grid {
-      grid-template-columns: 1fr;
-    }
+    .achievements { grid-template-columns: 1fr; }
   }
 </style>

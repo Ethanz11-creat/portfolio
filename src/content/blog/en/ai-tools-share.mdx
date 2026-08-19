@@ -1,0 +1,44 @@
+---
+title: 12 AI tools I've actually used
+description: From drawing diagrams and driving a browser to querying data — a hands-on list of the AI tools I've run for real, split into general and on-network
+date: 2026-07-22
+tags: [AI-Coding, Tools, MCP, Practice]
+---
+
+This is a record of the AI tools I've actually hands-on-used, split into **general / on-network** — not a bookmark list, but tools each of which I've genuinely run through and hit bugs with.
+
+## General
+
+**[drawio-skill](https://github.com/Agents365-ai/drawio-skill)**: a diagram skill for Claude Code — describe requirements, get draw.io-format architecture/flow/UML diagrams. Ships a 10,000+ official shape library, derives module dependency graphs from code, and embeds editable XML in exported PNGs—so a colleague can keep editing your diagram in draw.io. My talk diagram "evaluation-driven agent iteration" was drawn with it, from description to image in under ten minutes.
+
+**Playwright MCP**: Microsoft's browser-automation MCP that lets AI open a real browser—click, fill forms, log in, screenshot. The AI sees a structured snapshot (not guess-the-HTML), handles logins and multiple tabs. This is my most-called tool (thousands of times); typical uses: web info checking, automated login, and guarding crawler pipelines' login state.
+
+**WeChat MP crawl (we-mp-rss)**: auto-fetches selected WeChat official-account articles into a metadata-rich local Markdown corpus. I subscribe to 10 big-tech accounts, 500+ articles, and it grew two downstream apps—a reference pool when writing SOPs, and a D-Chat push bot that summarizes new posts on a schedule. This is a "data-asset type" tool: build once, grow several.
+
+**cmux**: a macOS terminal purpose-built for running multiple AI coding agents in parallel. Agent-aware notifications (lights red, system toast when an agent needs you), vertical tabs showing git branch/PR/port, and an embedded programmable browser to verify frontends. I run 2–3 tasks at once, scheduling attention by notification instead of polling.
+
+**[karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)**: a 65-line CLAUDE.md behavior spec from Karpathy's observations—think before acting, do only what's asked, only change what should change, aim for verifiable goals—directly countering AI's four coding bad habits. Drop it in the project root and it applies; cleaner diffs, easy review.
+
+**[ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)**: a UI/UX skill for AI coding tools with searchable rules for style, palette, typography, interaction, and accessibility. Its most valuable use isn't "generate a pretty page" but turning UI dev from "code looks about right" into: spec → implementation → state verification → real-device screenshot → overlay diff → fix & deliver.
+
+**[mcp-server-chart](https://github.com/antvis/mcp-server-chart)**: AntV's official chart MCP with 25+ chart types. Feed it data and a title and get a professionally colored chart back (first-class Chinese support), with self-hostable rendering. Paired with a database MCP it forms a "query → chart" loop—from asking to receiving the image in under a minute.
+
+**[mcp-toolbox](https://github.com/googleapis/mcp-toolbox)**: Google's database MCP gateway—one binary speaks to 30+ sources (Postgres/MySQL/SQLite/BigQuery). The key idea: tools are *configured*, not coded—turn SQL into parameterized tools in tools.yaml (e.g. "orders by city" exposes only a city param), so AI fills params and never touches the SQL; the permission boundary is set by a DBA. A bundled Web UI debug console lets you test tools before wiring them to an agent.
+
+**MindsDB**: open-source federated query engine that flattens hundreds of data sources into "one big database" so a single SQL joins across them. One `CREATE DATABASE` mounts a source, and a built-in MCP server gives agents the ability to query everything.
+
+**[Cube](https://github.com/cube-js/cube)**: open-source semantic layer. Define metric definitions in YAML first (how GMV / order-per-customer are computed), and both AI and BI query through it—unified numbers with permission governance. Queryers don't touch SQL: "give me total_gmv by city", the semantic layer auto-generates transparent SQL.
+
+**Grill-me**: lets AI firm up a vague idea into a clear requirement through successive questions—one key question at a time, advancing on a decision tree to flush out hidden assumptions, trade-offs, and non-goals before any spec/PRD. I tested it on a genuinely vague MHD monitoring-center requirement; it behaved like a real PM interview, refining the problem into a concrete "vehicle-task suspected-disconnect during execution" scenario.
+
+## On-network
+
+**dws CLI**: an internal CLI that pulls D-Chat group/private history as my own identity and exports structured text. Paired with a D-Chat bot webhook, AI's analysis can push back to the group automatically. When joining an active group with heavy volume, I have the agent read the PRD alongside messages to understand context.
+
+**datatools**: the official "数易 data-retrieval & analysis" skill — say "query dataset XXX, last-7-day channel GMV", and the AI auto-queries 数易, reads Cooper sheets, runs SQL, downloads reports, and hands back an analysis. It collapses 数易/Cooper/local Excel into one entry point; polling-style tasks (SQL runs, sheet downloads) have built-in timeouts and auto-wait; weekly-report data pulls in parallel as one summary.
+
+## Takeaways
+
+- **Data-asset tools outlast one-shot tools**: things like we-mp-rss and mcp-toolbox, built once that grow multiple downstream uses, beat disposable utilities.
+- **Hand the "authority" away**: give metric definitions to Cube and SQL boundaries to mcp-toolbox config; both AI and people are just callers, and risk collapses.
+- **Tools should close their own loop**: database MCP + chart MCP, from "query → chart → paste into weekly report"—single tools only unlock productivity when chained into a line.

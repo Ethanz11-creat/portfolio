@@ -1,6 +1,6 @@
 ---
-title: Flowtype
-subtitle: 语音转 prompt 的 macOS 应用——把口语化的想法一键变成结构化编码指令
+title: Flowtype Local
+subtitle: 语音转 prompt 的 macOS 应用——把口语化的想法，一键变成结构化编码指令
 order: 1
 featured: true
 tags: [Swift, MLX, Qwen3-ASR, LLM, SQLite]
@@ -15,18 +15,32 @@ metrics:
     label: 本地 4-bit 模型
 ---
 
-## 做什么
+## 一句话定位
 
-Flowtype 是一个为 AI 编码工作流设计的 macOS 语音输入应用：双击 Command 开始录音，再按一次输出原始转写，双击结束则输出经 LLM 润色后的结构化 prompt，并直接注入当前聚焦的输入框。
+Flowtype 是为 **AI 编码工作流**设计的 macOS 语音输入应用：双击 Command 开始录音，再按一次输出原始转写，双击结束则输出经 LLM 润色后的**结构化 prompt**，并直接注入当前聚焦的输入框。核心目标只有一个——让「嘴里说出来的想法」以最快路径变成「AI 能直接开干的任务」，全程本地、隐私优先。
+
+> 从想法、语音到能运行的 Agent：这是我自己工作台的第一块拼图。
+
+## 做什么：三种交互节奏
+
+Flowtype 不是简单的「语音转文字」，而是围绕 AI 编码场景设计了三种递进的输出形态：
+
+- **第一拍（双击开始/单击输出）**：快速记录，得到原始转写。适合会议速记、随手记 idea。
+- **第二拍（双击结束）**：**PostProcess → Polish** 两级加工，把口语去重、补全空缺，整理成结构化的编码指令（含明确任务、约束、验收目标）。
+- **第三拍（自动注入）**：成品 prompt 直接写入当前最前面的文本输入框（Xcode、VSCode、Terminal、浏览器输入框等），省掉「复制 → 粘贴 → 切换窗口」的手动搬运。
 
 ## 怎么用 AI 做的
 
-- **本地模型落地**：用 speech-swift（Qwen3-ASR via MLX，约 300MB 4-bit 量化）在 Swift 内直接完成转写，砍掉 Python 服务端，实现零 Python 依赖
-- **模块化流水线**：Recording → ASR → PostProcess → Polish → Injection 五阶段，SessionContext 状态贯穿全程
-- **产品闭环**：SQLite（GRDB）历史记录、统计面板、GitHub 风格热力图、隐私优先（音频不落盘）
+- **本地模型落地，砍掉服务端**：用 `speech-swift`（Qwen3-ASR via MLX，约 300MB 4-bit 量化）在 Swift 内部直接完成转写，`AppleSpeech` 作为兜底，实现**零 Python 依赖**——Think 的推理和 ASR 全部发生在本地，不占网络、不出内网。
+- **模块化五阶段流水线**：`Recording → ASR → PostProcess → Polish → Injection`，`SessionContext` 状态贯穿全程，每一阶段可单独替换或扩展（比如换 LLM Provider、加词典、换风格包）。
+- **产品闭环而非玩具**：用 GRDB(SQLite) 存历史记录、统计面板、GitHub 风格热力图、隐私优先策略（音频不落盘）。一个「语音转 prompt」的工具，做成了可长期使用的生产级应用。
 
 ## 技术要点
 
-- Swift 6.2 / macOS 15+，SwiftUI
-- Qwen3-ASR 本地推理（MLX），AppleSpeech 兜底
-- 多 LLM Provider（OpenAI 兼容），词典与风格包
+- **语言/平台**：Swift 6.2 / macOS 15+，SwiftUI
+- **端侧语音**：Qwen3-ASR 本地推理（MLX 4-bit），AppleSpeech 兜底，`speech-swift` 封装
+- **LLM 润色**：多 Provider（OpenAI 兼容），词典 + 风格包定制输出
+
+## 收获与取舍
+
+Flowtype 是「用 AI 构建一切」的典型样本：训练提示词本身也是工程。它让我验证了「本地小模型 + 端上工作流」是 AI 工具产品的可行形态——不需要后台服务，不需要密钥，下载即用，隐私天然可控；同时把「说→写→注入」的延迟压到最低，真正融进了编码手感里。

@@ -1,0 +1,44 @@
+---
+title: 实习 AI 工具链
+subtitle: 两个自研的 AI 自动化系统——市场周报 Agent 与内网 AI 资讯精选平台
+order: 4
+featured: true
+tags: [Go, Python, React, Agent 自动化, RAG, 定时任务]
+year: '2026'
+metrics:
+  - value: '2'
+    label: 自研系统
+  - value: '20+'
+    label: 独立增量迭代
+  - value: '0→1'
+    label: 从零到上线
+---
+
+实习期间我完全独立地自研并上线了两套 AI 自动化系统，从需求、设计到实现、部署全链路自己闭环。它们合在一起，代表了我实习阶段的 AI 工程落地能力。
+
+## 一、mkt-weekly · 市场周报 Agent
+
+一个**定时自动拉取 → 清洗 → 加工 → 推送**的市场信息周报系统，把"每天人工去逛、去抄、去整理市场动态"这件重复劳动，变成无人值守的 Agent 流水线。
+
+- **采集**：RSS + 多源抓取，归一化原始信息，幂等去重。
+- **加工**：分类、评分/筛选（`grader`）、意图理解、跨文章周期过滤（把零散每日信息聚合为有价值的周报维度）。
+- **洞察**：`insight` 抽取关键变化，`digest_engine` 组装成可读的周报。
+- **推送**：`push_digest` / `weekly_push` 定时推送到 IM，配套 `digest_watchdog` 稳定性守护与 `webhook_server`。
+- **工程化**：完整 `tests/`（15+ 用例覆盖 intent/classify/grader/digest/loop/watchdog 等）、crontab/plist 定时任务、docs 全生命周期文档（design/decisions/runbooks/handoff），可稳定久跑。
+
+## 二、ai-cool · 内网 AI 资讯精选平台
+
+把外部 `aihot` 的「每日精选 AI 日报 + 当前热点 + 分类检索」整套能力**复刻重建到内网**的网页产品 + REST API。
+
+- **三层跨机加工**：采集层（外网 RSS/公众号/X）→ 归一化幂等 → 加工层（内网 LLM 管线）。
+- **核心"智能"全部自建**：五轴评分、分类、精选判定、**事件聚类**（同事件多源聚簇、只出 primary 防刷屏）、**热度算法**（多信源计数 + 指数衰减）、每日主编日报生成。
+- **1:1 复用公开 API 契约**：`openapi.yaml` 的 6 个只读端点 + 数据模型 + cursor 翻页 + weak ETag/304 + 限流 + 7 天窗口全对齐。
+- **工程完备**：Go 后端（`internal/` 分模块 + 完整单测）+ React 前端（Feed/热点/日报/详情页/知识图谱）+ 部署脚本（supervisor/nginx/systemd），docs/specs 32+ 篇增量设计沉淀。
+
+## 怎么用 AI 做的
+
+两套系统都是 **AI 结对 + Loop 工程**的完整实践：
+
+- 每个功能都走「Superpowers 澄清需求 → 方案 → 计划 → 分阶段执行 → 测试验收」，并沉淀为 `docs/superpowers/specs` 与 `plans`。
+- 用 **自动化闭环** 让系统自己跑：采集→加工→推送全异步，watchdog 守护稳定性，真正无人值守。
+- 从 0 到 1 上线：mkt-weekly 跑定时线下任务，ai-cool 部署到内网开发机并提供 API/前端，完整走通 AI Coding 的部署链路。

@@ -1,0 +1,44 @@
+---
+title: Internship AI Toolchain
+subtitle: Two self-built AI automation systems — a market-weekly Agent and an internal AI-news curation platform
+order: 4
+featured: true
+tags: [Go, Python, React, Agent Automation, RAG, Cron Jobs]
+year: '2026'
+metrics:
+  - value: '2'
+    label: Self-built systems
+  - value: '20+'
+    label: Incremental iterations
+  - value: '0→1'
+    label: From zero to live
+---
+
+During my internship I independently designed, built, and shipped two AI automation systems, closing the loop from requirement to deployment myself. Together they represent my AI-engineering delivery capability at the internship stage.
+
+## 1. mkt-weekly · Market Weekly Report Agent
+
+A **scheduled fetch → clean → process → push** market-information weekly-report system that turns the repetitive "manually browse, copy, and summarize market updates" job into an unattended agent pipeline.
+
+- **Ingest**: RSS + multi-source fetch, normalized raw info, idempotent dedup.
+- **Process**: classification, scoring/scoring (grader), intent understanding, cross-article period filtering (aggregating scattered daily info into weekly report dimensions).
+- **Insight**: an `insight` step extracts key changes; `digest_engine` assembles a readable weekly report.
+- **Push**: `push_digest` / `weekly_push` schedule delivery to IM, with a `digest_watchdog` stability guard and `webhook_server`.
+- **Engineering**: full `tests/` (15+ cases across intent/classify/grader/digest/loop/watchdog), crontab/plist scheduling, and a complete docs lifecycle (design/decisions/runbooks/handoff) — stable for long unattended runs.
+
+## 2. ai-cool · Internal AI-News Curation Platform
+
+A web product + REST API that **rebuilds the external `aihot` experience — "daily curated AI report + hot topics + categorized search" — on the internal network**.
+
+- **Three-tier cross-machine pipeline**: collection (external RSS/WeChat MP/X) → normalize + idempotent → processing (internal LLM pipeline).
+- **All core intelligence self-built**: five-axis scoring, classification, curation judgment, **event clustering** (multisource reports of the same event cluster, only primary emitted to avoid spam), **heat algorithm** (multi-source count + exponential decay), and daily editor-style report generation.
+- **1:1 open API contract reuse**: the 6 read-only endpoints + data model + cursor pagination + weak ETag/304 + rate limiting + 7-day window fully aligned with `openapi.yaml`.
+- **Complete engineering**: Go backend (modular `internal/` + full unit tests) + React frontend (Feed/hot topics/daily report/detail page/knowledge graph) + deployment scripts (supervisor/nginx/systemd), with 32+ incremental design docs.
+
+## How it was built with AI
+
+Both systems are a full practice of **AI pair-programming + Loop engineering**:
+
+- Every feature followed "Superpowers clarify requirements → solution → plan → staged implementation → test & acceptance," captured as `docs/superpowers/specs` and `plans`.
+- **Automation loops** let the systems run themselves: ingest → process → push fully async, guarded by watchdog — truly unattended.
+- From 0 to 1 in production: mkt-weekly runs on a scheduled on-site task; ai-cool is deployed to an internal dev box providing API and frontend, walking the full AI-coding deployment path.

@@ -1,0 +1,59 @@
+---
+title: VLM Collision-Detection Eval Platform
+subtitle: An evaluation loop where VLM models act as "expert judges" for autonomous-driving collision detection — AI judging AI, with humans keeping final say
+order: 3
+featured: true
+tags: [Go, React, Qwen3-VL, LLM-as-Judge, Confusion Matrix, BadCase]
+year: '2026'
+metrics:
+  - value: '55,996'
+    label: Eval frames
+  - value: '0.812'
+    label: Recall
+  - value: '10'
+    label: Iterations
+---
+
+## Why
+
+Collision detection is the safety foundation of Robotaxi, but evaluation used to rely on manual records and confusion matrices alone—unable to answer "why is the model wrong?". I built an evaluation loop platform where **a VLM model acts as expert judge**, covering the full chain: data management → eval execution → two-tier judging → BadCase analysis → experiment management.
+
+## Core idea: AI judges AI + human in the loop
+
+- **Three-way comparison**: the business fine-tuned model, a VLM expert judge, and human ground-truth under the same visual input.
+- **Two-tier judging**:
+  - Tier 1 "objective metrics" — frame-by-frame model-vs-GT confusion matrix: Accuracy / Precision / **Recall** / FPR / **Fβ (β>1 favoring recall)**.
+  - Tier 2 "expert quality review" — Qwen3-VL-30B-Thinking inspects images and scores (verdict/score/error category), plus an **Agent four-role courtroom** deep review: observer → judge's first ruling → defender → final ruling, with the whole flow logged to `transcript_json`.
+- **Against anchoring bias**: mandatory blind review (`blind_verdict`) — the first pass never sees the ground truth.
+- **Human in the loop**: disputed frames auto-enter a manual review queue; confirmed BadCases are distilled into rules (`vlm_judge_memory`) injected into later evals — a "learns as it's used" closed loop.
+
+## Key results
+
+On the generalization test set of **8,021 frames / 674 real collisions**:
+
+| Model | Accuracy | Precision | Recall | FPR |
+| --- | --- | --- | --- | --- |
+| Qwen3-VL-4B Zeroshot | 0.929 | 0.839 | 0.185 | 0.003 |
+| Fine-tuned (fisheye gen.) | **0.981** | **0.958** | **0.812** | 0.003 |
+
+Recall jumped from 0.185 to **0.812 (+0.63)** while precision rose to 0.958—both improving without the usual trade-off. Expert blind-review agreement was 0.72–0.87, with disputed frames auto-routed to manual review.
+
+- **BadCase attribution**: over 396 attributed cases, found that missed detections (FN) account for **71%**; surfaced the top three miss scenarios: contact not visible at impact (29%) > edge contact (27.5%) > body close to fence (7.8%).
+- **Hardened**: 35 rules injected into the judge model.
+
+## Scale & iteration
+
+- 14 datasets / **55,996 frames** / 34 evals / 748 expert reviews / 35 rules.
+- **10 dense iterations** from 06-03 to 06-25: foundation → UX polish → judging-depth upgrade (four-role courtroom) → engineering wrap-up (streaming/chunked upload, in-flight ingestion, JWT user isolation).
+
+## Tech stack
+
+React 18 + TypeScript + HeroUI + ECharts frontend; Go + chi + GORM + SQLite backend (single-binary deploy); OpenAI-compatible SDK to Qwen3-VL; JWT + SSO auth.
+
+## Lessons
+
+> **AI judging AI works, but humans must stay in the loop**: blind-review agreement is ~80%; disputed frames need a human anchor to be credible to business.
+
+> **Recall is the core metric in safety scenarios**: misses are the real risk; FPR is acceptable unless it floods false alarms. Fβ helps the team weigh precision vs. recall correctly.
+
+> **Real data matters more than the model**: once real predictions.jsonl was wired in, BadCase analysis transformed — from "the AI says you're wrong" to "compared to ground truth, you really are wrong".

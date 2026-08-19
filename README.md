@@ -1,6 +1,6 @@
 # Portfolio · 个人作品集
 
-赵一恒（Yiheng Zhao）的个人作品集网站——AI Agent 应用开发工程师。
+赵一恒（Yiheng Zhao）的个人作品集网站——用 AI 构建 Agent，也构建一切。
 
 - 框架：Astro 7 + TypeScript
 - 双语：/zh/ 与 /en/

@@ -1,0 +1,62 @@
+---
+title: Washing the "AI flavor" out of your frontend
+description: Building pages with AI is no longer hard—the hard part is not making it obvious. Quantify the "AI flavor", then wash it out with three escalating methods
+date: 2026-07-18
+tags: [AI-Coding, Frontend, Design, UI/UX]
+---
+
+## The problem: what you ship looks AI-made
+
+Since AI coding tools went mainstream, "writing the frontend" is no longer the bottleneck—you can't fail to stand up a working page in a few sentences. The new problem: **you can't fail to tell it was made by AI**.
+
+Purple-to-blue gradient backgrounds, centered rounded cards, generic shadows, a row of emoji icons, a hero + three-column features + one CTA… this "template feel" is now called **the AI flavor**. It's not ugly, but it gets cheap and faceless fast—every coded product looks cut from the same mold.
+
+## How to spot the AI flavor
+
+AI-generated frontends often hit several of these at once; the more hits, the heavier the flavor:
+
+- **Palette & texture**: loves purple-blue gradients, indigo-primary, barely touches the default palette; rounded corners uniform, soft shadows, spacing so even it's stiff.
+- **Structure clichés**: always Hero headline → three/four feature columns → one-line CTA, order barely changes.
+- **Icons & type**: emoji as icons, or a default line-icon set; body text all Inter/Roboto, weak weight contrast.
+- **Missing craft**: no careful hover/focus, no empty states or micro-interactions—it runs, but it doesn't survive a close look.
+
+Human-made pages are often "imperfect but intentional": a bolder brand color, deliberate asymmetry, generous whitespace in one spot and density in another. **AI hands you "the greatest-common-denominator good-looking"—and that is exactly the opposite of distinctiveness.**
+
+## Root cause: why the AI smell
+
+1. **Models prefer the "safe average aesthetic"**—that clean, generic modern UI dominates their training data, so without strong constraints they regress to it.
+2. **Prompts that are too vague**—"make me a nice landing page" is just asking for the model's average.
+3. **No decision constraints**—nobody told it where the primary color, spacing scale, tone, and intentional asymmetry should land.
+
+## Turn "beautification" into a measurable ruler
+
+Beauty is subjective, but it can be discussed and verified. Break "AI flavor" into checkable dimensions to get one shared ruler:
+
+- Is there a single **primary color** (not a default gradient)?
+- Is the **weight contrast and line-height** intentional (not reflexive)?
+- Does the **spacing rhythm serve hierarchy** (whitespace, but also density)?
+- Are the **interaction states complete** (hover/focus/empty/loading)?
+- Did it **break the grid and symmetry** (one deliberate offset)?
+
+## Three escalating methods
+
+**① Set a palette & tokens**: give it a primary/emphasis/neutral and a spacing/radius scale first, then let AI work inside the constraints—a non-average subset of the safe zone.
+
+**② Restructure & add craft**: hand it a reference (brand reference or another screenshot), specify the information hierarchy, and require hover/focus/empty states—push "it runs" to "it survives a close look."
+
+**③ Deliberately break the formula**: break symmetry on purpose, pick a less safe primary, add density or big whitespace at chosen spots. Make the page *characterful*, not *most normal-looking*.
+
+## Skills you can install today
+
+The three methods aren't theory — people have already packaged "washing off the AI smell" into installable skills. The two I reach for the most:
+
+- [anthropics/claude-code → plugins/frontend-design](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design): Anthropic's official frontend-design skill, auto-activated. Its core job is exactly "method ①"—make Claude pick a clear aesthetic direction before coding (brutalist / editorial / retro-futuristic…), require real typography pairings, block cookie-cutter component patterns and formulaic layouts, and enforce CSS variables with a cohesive color system. Install with `claude plugin add anthropic/frontend-design`—the first gate against the AI smell.
+- [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill): a "design intelligence" database skill — ~200+ styles, 160+ palettes, 100+ UX rules (charts and per-stack best practices included) — retrieved by a search script rather than pure prompts. This maps to "methods ②/③"—pass `--design-system` with "product type + industry + keywords" to fan out across domains and produce a full design system; `--persist` writes a cross-session layered spec; install via `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill`.
+
+In one sentence: frontend-design answers "don't default" (gives direction); ui-ux-pro-max answers "how to choose, how to look it up" (gives evidence). Install the official one first to reject the default ugly, use pro-max on demand to query styles/palettes/fonts, then make trade-offs by hand—which mirrors the light-to-heavy three layers above.
+
+## Takeaways
+
+- The highest-leverage order is **constraints → craft → breaking the formula**; reversing it overshoots.
+- "Good-looking" is most useful when turned into **checkable rules**: if it can be quantified, every change has direction and an acceptance bar.
+- The goal is "this was clearly designed," not "this is the prettiest"—distinctiveness comes from trade-offs, not from the average.

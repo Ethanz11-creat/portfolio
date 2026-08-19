@@ -30,3 +30,13 @@ tags: [AI-Coding, SOP]
 - 澄清阶段花的时间，会在执行阶段十倍省回来
 - 验收标准写不清楚，说明需求还没想清楚
 - SOP 不是束缚，是把"碰运气"变成"可预期"
+
+## 支撑这套流程的仓库
+
+这套 SOP 不是原创方法论，而是把社区最成熟的工程技能装进了流程里。核心是 **Superpowers**：
+
+- [obra/superpowers](https://github.com/obra/superpowers)：Claude Code 的著名方法论插件，内置从澄清到交付的完整技能链——`using-superpowers`（技能发现）、`brainstorming`（澄清需求）、`writing-plans`（写计划）、`executing-plans`（分阶段执行）、`test-driven-development`、`verification-before-completion`（验证后再宣称完成）、`requesting-code-review` 等。上面每一步其实都是它的一个 skill。
+- 配套的 [obra/superpowers-marketplace](https://github.com/obra/superpowers-marketplace) 是官方插件市场，安装后在 Claude Code 里 `/plugin marketplace add obra/superpowers-marketplace`，再 `/plugin install superpowers@superpowers-marketplace` 就能用。
+- 社区可编辑的 [obra/superpowers-skills](https://github.com/obra/superpowers-skills) 允许你 fork 后给这套技能库提新 skill 或改进。
+
+一句话：**流程化输入 = Superpowers 的方法论 + 你的项目上下文**。它把"澄清 → 方案 → 计划 → 执行 → 验收"每一步固化成可复用的技能，这正是这套 SOP 能"可预期"的原因。

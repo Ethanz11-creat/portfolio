@@ -1,0 +1,46 @@
+---
+title: dsh-billing-tui
+subtitle: Peak/off-peak billing TUI plugin for DeepSeek Harness — watch token usage live, compute cost, and print a persistent ASCII receipt
+order: 5
+featured: true
+tags: [TypeScript, DeepSeek Harness, TUI, npm, dsh-plugin]
+github: https://github.com/Ethanz11-creat/dsh-billing-tui
+npm: https://www.npmjs.com/package/dsh-billing-tui
+year: '2026'
+metrics:
+  - value: 'Live'
+    label: Cost monitor
+  - value: 'peak/off'
+    label: Tiered pricing
+  - value: '2'
+    label: TUI/Web modes
+---
+
+## One-liner
+
+A billing plugin for **DeepSeek Harness (DSH)**: compute the live session cost using DeepSeek's official peak/off-peak pricing, show the running total in the TUI status bar, and print a whale ASCII receipt via `/billing`; it also ships a Web UI.
+
+## What it does
+
+- **Live token monitoring**: listens to DS Harness token usage and converts it into cost using **DeepSeek's official peak/off-peak pricing** (different rates for high/low load periods).
+- **TUI status-bar integration**: the running cost is shown directly in DSH's TUI status bar — you always know the tab while coding.
+- **Receipt**: type `/billing` to print a formatted whale ASCII receipt — turning "how much did I spend" into a storable, shareable visual artifact.
+- **Web UI**: the same billing logic exposed as a web page for non-terminal scenarios.
+
+## How it was built with AI
+
+This is my own vibe-coded project, and a practice in **LLM tool / API numerical-interface design**:
+
+- Built as a DSH plugin, following its `dsh-plugin` interface conventions for lifecycle and event hooks.
+- Modeled peak/off-peak billing from the official price sheet, handling tier switches and cumulative stats.
+- Published as an `npm` package with **GitHub source + npm install** entry points, closing the loop from code to distribution for an open-source utility.
+
+## Technical highlights
+
+- TypeScript, DSH plugin development, npm publishing
+- Peak/off-peak tiered pricing model; TUI + Web dual rendering
+- ASCII receipt generation (persistent, storable)
+
+## Takeaways
+
+dsh-billing-tui represents my ability to "turn a real idea into a usable tool quickly with AI": a complete utility that fits into someone's toolchain, with clear pricing logic and npm distribution — fully vibe-coded outside internship hours.

@@ -30,3 +30,13 @@ The value of this SOP can be validated with a controlled experiment: the same ta
 - Time spent clarifying is repaid tenfold during execution
 - If you cannot write acceptance criteria, you have not thought the requirements through
 - An SOP is not a constraint — it turns luck into predictability
+
+## The repos behind this SOP
+
+This SOP isn't an original methodology — it's the most mature engineering skills from the community wired into a flow. The core is **Superpowers**:
+
+- [obra/superpowers](https://github.com/obra/superpowers): the well-known methodology plugin for Claude Code, shipping a full skill chain from clarification to delivery — `using-superpowers` (skill discovery), `brainstorming` (clarify), `writing-plans`, `executing-plans`, `test-driven-development`, `verification-before-completion`, `requesting-code-review`, and more. Each step above is actually one of its skills.
+- Companion [obra/superpowers-marketplace](https://github.com/obra/superpowers-marketplace) is the official plugin marketplace. In Claude Code, run `/plugin marketplace add obra/superpowers-marketplace`, then `/plugin install superpowers@superpowers-marketplace`.
+- The community-editable [obra/superpowers-skills](https://github.com/obra/superpowers-skills) lets you fork it and contribute new skills or improvements.
+
+In one sentence: **processed input = Superpowers' methodology + your project context.** It turns each step of "clarify → propose → plan → execute → accept" into a reusable skill — which is exactly why this SOP is predictable, not luck.

@@ -1,0 +1,49 @@
+---
+title: VSA · Voyager Super Agent
+subtitle: Enterprise Information Agent project and evaluation-methodology — from POC and design to an Agent benchmark system
+order: 2
+featured: true
+tags: [Go, Eino ADK, MCP, 3-Tier Memory, HITL, OTel, Benchmark]
+year: '2026'
+metrics:
+  - value: '3'
+    label: Eval dimensions
+  - value: '30+'
+    label: E2E eval set
+  - value: '100%'
+    label: Reachable entry
+---
+
+## Why
+
+Information inside an enterprise is scattered across docs, dashboards, and meeting notes. VSA (Voyager Super Agent) is an **Information Agent** built on D-Chat (the internal IM): ask a question, get an answer with sources, confidence, and permission-scoped output. It was the core project I independently drove through design and landing during my internship, spanning **product design** and **Agent evaluation methodology**.
+
+## What I did
+
+- **Early POC**: validated a minimal closed loop on Eino ADK—multi-source query (Cooper docs / 数易 reports), internal MCP integration, and D-Chat bot reachability.
+- **Solution design**: converged the design for an information-query scenario and a multi-group-chat scenario — spanning query enablement, question completion, task decomposition, tool calls, result handling, evidence checking, completion judgment, and the final answer; and the boundaries between group Session, real Sender, personal Memory, group-shared Memory, and Workspace.
+- **Evaluation methodology**: turned "is the Agent good" from subjective feel into a measurable system. Established eval dimensions and an **end-to-end eval set** for the information-query scenario, using real queries to build a baseline for regression and iteration.
+
+## Core Agent-engineering mechanisms
+
+- **Tool governance**: ToolSpec, dynamic ToolSearch, Policy and ToolGuard — unified tool discovery, per-turn assembly and call validation; loop detection, result offloading and context compaction for long queries.
+- **Three-tier memory**: L1 working context, L2 user long-term memory, L3 session profile; isolated by user × surface, with separate persistence, splitting and redaction policy for group vs. private chat.
+- **Reliability & observability**: Orchestrator + short-circuit Pipeline ties together the runtime lifecycle; Goal/Checkpoint, HITL interruption recovery, background Review; structured turn audit, Stage Trace and OTel wiring.
+
+## Evaluation methodology
+
+The benchmark is the other half of VSA's value — it makes the Agent design defensible and evolvable:
+
+| Dimension | Focus |
+| --- | --- |
+| Result quality | Is the answer accurate, complete, and sourced |
+| Process capability | Are intent understanding, task decomposition, and tool choice sound |
+| Business value | Does it answer the user's actual business need |
+| Safety & reliability | Is permission leakage, evidence gaps, or error propagation controlled |
+
+Tasks come from three sources — real business data, industry-typical tasks, and hand-built edge cases — forming a "more testable, more accurate" loop.
+
+## How it was built with AI
+
+- Full AI pair-programming: clarify requirements → solution → plan → staged implementation → test & acceptance; eval sets and design docs systematically archived.
+- Used a benchmark mindset to build regression baselines: every change validated against the eval set, so "landing the design" and "proving quality" advanced in lockstep.

@@ -1,6 +1,6 @@
 ---
-title: Flowtype
-subtitle: A macOS voice-to-prompt app — turning spoken, messy thoughts into structured coding prompts with one keypress
+title: Flowtype Local
+subtitle: A voice-to-prompt macOS app — turn casual spoken ideas into structured coding instructions in one tap
 order: 1
 featured: true
 tags: [Swift, MLX, Qwen3-ASR, LLM, SQLite]
@@ -15,18 +15,32 @@ metrics:
     label: Local 4-bit model
 ---
 
-## What it does
+## One-liner
 
-Flowtype is a macOS voice input app built for AI coding workflows: double-press Command to start recording, press once to output the raw transcript, or double-press to end and get an LLM-polished structured prompt injected directly into the focused field.
+Flowtype is a macOS voice input app designed for **AI coding workflows**: double-tap Command to start recording, tap once to output the raw transcript, double-tap to end and emit a **structured prompt** polished by an LLM, then inject it straight into the currently focused input field. The single goal — get "spoken ideas" onto a task an AI can start on, as fast as possible, fully local and privacy-first.
 
-## How I built it with AI
+> From rough ideas and voice to a working agent: the first piece of my own workbench.
 
-- **Local model, no server**: transcription runs in Swift via speech-swift (Qwen3-ASR through MLX, ~300MB 4-bit), eliminating the Python server entirely — zero Python dependencies
-- **Modular pipeline**: Recording → ASR → PostProcess → Polish → Injection, with SessionContext state flowing through every stage
-- **Product loop**: SQLite (GRDB) history, stats dashboard, GitHub-style heatmap, privacy-first (audio never touches disk)
+## What it does: three interaction rhythms
+
+Flowtype isn't a plain "speech-to-text"—it's designed around three progressively richer output forms for coding:
+
+- **Beat one (double-tap start / single-tap output)**: quick capture → raw transcript. For meeting notes and jotting ideas.
+- **Beat two (double-tap end)**: a **PostProcess → Polish** two-stage pass that dedupes filler, fills gaps, and organizes the result into a structured coding instruction (clear task, constraints, acceptance criteria).
+- **Beat three (auto-injection)**: the finished prompt is written directly into the frontmost text field (Xcode, VSCode, Terminal, browser inputs…), removing the manual copy → switch → paste hop.
+
+## How it was built with AI
+
+- **Local model, no server**: `speech-swift` (Qwen3-ASR via MLX, ~300MB 4-bit quantized) does transcription inside the Swift app, with `AppleSpeech` as fallback — **zero Python dependencies**. Both thinking and ASR stay on-device; no network, no egress.
+- **Modular five-stage pipeline**: `Recording → ASR → PostProcess → Polish → Injection`, with a `SessionContext` state carried throughout; every stage can be swapped or extended (different LLM provider, dictionaries, style packs).
+- **A product loop, not a toy**: GRDB (SQLite) history, stats panel, GitHub-style heatmap, privacy-first strategy (audio never written to disk). A "voice to prompt" tool built as a production-grade app you can keep using.
 
 ## Technical highlights
 
-- Swift 6.2 / macOS 15+, SwiftUI
-- Qwen3-ASR local inference (MLX), AppleSpeech fallback
-- Multiple LLM providers (OpenAI-compatible), dictionary & style packs
+- **Language/platform**: Swift 6.2 / macOS 15+, SwiftUI
+- **On-device ASR**: Qwen3-ASR local inference (MLX 4-bit), AppleSpeech fallback via `speech-swift`
+- **LLM polish**: multi-provider (OpenAI-compatible), dictionaries + style packs for tailored output
+
+## Takeaways & trade-offs
+
+Flowtype is a specimen of "building everything with AI": tuning the prompt pipeline is itself engineering. It validated that **a small local model + on-device workflow** is a viable shape for AI tools — no backend, no keys, download-and-run, privacy by construction — while cutting the "speak → write → inject" latency so low it melts into the coding feel.

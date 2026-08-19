@@ -6,7 +6,7 @@
 
 ## 1. 定位与目标
 
-面向 AI Agent 应用开发岗位的**个人作品集网站**，定位是「AI 能力展示」，而非简历镜像：
+面向独立开发 / AI 构建者的**个人作品集网站**，定位是「用 AI 构建 Agent 与一切」的**能力展示**，而非简历镜像：
 
 - **展示 AI coding 能力**：如何用 AI 协作构建产品（选型思考、AI 协作流程、迭代记录）
 - **展示 AI 思维**：方法论沉淀（Loop Engineering、Agent Benchmark、AI Coding）
@@ -19,18 +19,19 @@
 
 ```
 首页（单页 + 锚点导航）
-├── 01 Hero        — 名字「赵一恒 Yiheng Zhao」+ 定位「AI Agent 应用开发工程师」
+├── 01 Hero        — 名字「赵一恒 Yiheng Zhao」+ 定位「用 AI 构建 Agent，也构建一切」
 │                    + 一句话价值主张 + CTA（看作品 / 下载简历 PDF）
-├── 02 AI 实践作品
-│     ├── 旗舰卡片: Flowtype — 语音转 prompt 的 macOS 应用
-│     │              （Swift + Qwen3-ASR 本地模型 via MLX + 模块化 pipeline + SQLite 历史/统计）
-│     ├── 旗舰卡片: Voyager Agent Runtime — Go/Eino ADK 自研 VSA
-│     │              （聚焦 runtime：MCP/Skills 接入、三层记忆、HITL、可观测性）
-│     ├── Agent 工具链: Claude Code 飞书 Skills 生态（MCP/Skill 构建、agent 编排）
-│     ├── 自动化工具: job-tracker / job-mail-watcher
+├── 02 AI 实践作品（5 个，均为详情页）
+│     ├── 旗舰: Flowtype Local — 语音转 prompt 的 macOS 应用（多章节详述：交互节奏/本地 ASR/五阶段流水线/产品闭环）
+│     ├── 旗舰: VSA · Voyager Super Agent — 企业 Information Agent 项目与评测方法建设
+│     ├── VLM 碰撞检测评测平台 — 让 VLM 当"专家裁判"的碰撞评测闭环（LLM-as-Judge + 人在回路）
+│     ├── 实习 AI 工具链 — 市场周报 Agent（mkt-weekly）+ 内网 AI 资讯精选平台（ai-cool）
+│     └── dsh-billing-tui — DeepSeek Harness 峰谷计费 TUI 插件（自研 vibe-coding，npm 分发）
 │     └── 每张卡片双重视角：做了什么 + 怎么用 AI 做的（选型思考/AI 协作流程）
-├── 03 AI 思维/方法论 — 博客区：首发 3 篇
-│     （Loop Engineering、Agent Benchmark、AI Coding）+ 「全部文章」入口
+│     └── 已移除：feishu-skills、job-tracker
+├── 03 AI 思维/方法论 — 博客区：5 篇
+│     （Loop Engineering、Agent Benchmark、AI Coding SOP、
+│      洗掉前端的 AI 味、我实践过的 12 个 AI 工具）+ 「全部文章」入口
 ├── 04 关于与联系 — 简介、技术栈总览、简历 PDF 下载、GitHub / 邮箱
 └── 页脚 — 导航重述 + © 2026
 ```
@@ -151,7 +152,9 @@ GitHub 仓库（Ethanz11-creat/portfolio）→ Cloudflare Pages 自动构建
 
 ## 9. 事实边界（内容撰写时必须遵守）
 
-- Voyager：只写 runtime 已实现能力（D-Chat 主链路、MCP/Skills、三层记忆、HITL、OTel 接线），不写"完整企业级产品"、主动推送、完整用户态权限、质量评测门禁
-- 资讯平台 / VLM：不收录
+- VSA：只写已实现能力（Eino ADK PoC、方案设计、评测维度与端到端评测集、信息查询/多群聊场景、三层记忆、HITL、OTel），不写未闭环指标
+- VLM 碰撞检测评测平台：以项目报告为事实源（55,996 帧、召回率 0.812、10 轮迭代），所有数字必须可核验
+- 实习 AI 工具链（mkt-weekly / ai-cool）：以代码与 docs 为事实源，只写已上线系统与模块能力
+- dsh-billing-tui：以 GitHub/npm 为事实源，写真实实现的计费、TUI、小票、Web 能力
 - 所有数字必须有可核验口径
 - Flowtype：以 README（flowtype-local 分支）为事实源

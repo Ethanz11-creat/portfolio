@@ -11,30 +11,44 @@ const zhPath = path.replace(/^\/(zh|en)/, '/zh');
 const enPath = path.replace(/^\/(zh|en)/, '/en');
 ---
 <div class="lang-switch">
-  <a href={zhPath} class:list={{ active: locale === 'zh' }}>中</a>
+  <a href={zhPath} class:list={{ active: locale === 'zh' }} aria-current={locale === 'zh' ? 'true' : undefined}>中</a>
   <span class="sep">/</span>
-  <a href={enPath} class:list={{ active: locale === 'en' }}>EN</a>
+  <a href={enPath} class:list={{ active: locale === 'en' }} aria-current={locale === 'en' ? 'true' : undefined}>EN</a>
 </div>
 
 <style>
   .lang-switch {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
+    gap: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    background: rgba(247, 245, 237, 0.92);
+    border: 1.5px solid rgba(20, 20, 20, 0.55);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    padding: 2px;
   }
   .lang-switch a {
-    color: rgba(245, 245, 242, 0.85);
-    transition: color 0.2s;
+    color: #333;
+    padding: 3px 11px;
+    border-radius: 999px;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
   }
   .lang-switch a:hover {
-    color: #f5f5f2;
+    color: #000;
+    background: rgba(0, 0, 0, 0.06);
   }
   .lang-switch a.active {
-    color: #8aa5ff;
+    color: #fff;
+    background: #1f2330;
   }
   .sep {
-    color: var(--line);
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 400;
+    padding: 0 1px;
   }
 </style>
