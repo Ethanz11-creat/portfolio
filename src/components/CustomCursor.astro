@@ -2,7 +2,6 @@
 ---
 
 <div class="custom-cursor" aria-hidden="true">
-  <span class="cursor-core"></span>
 </div>
 
 <script>
@@ -28,7 +27,13 @@
 
     const onPointerOver = (event: PointerEvent) => setInteractiveState(event.target);
     const onPointerDown = () => cursor.classList.add('is-pressed');
-    const onPointerUp = () => cursor.classList.remove('is-pressed');
+    const onPointerUp = () => {
+      cursor.classList.remove('is-pressed');
+      cursor.classList.remove('is-clicked');
+      // Restart the pulse even when the user clicks repeatedly.
+      requestAnimationFrame(() => cursor.classList.add('is-clicked'));
+      window.setTimeout(() => cursor.classList.remove('is-clicked'), 460);
+    };
     const hide = () => cursor.classList.remove('is-visible');
 
     const enable = () => {
@@ -65,11 +70,13 @@
     --cursor-x: -100px;
     --cursor-y: -100px;
     align-items: center;
-    background: rgba(255, 253, 247, 0.18);
-    border: 2px solid var(--ink);
+    -webkit-backdrop-filter: invert(1) brightness(0.78);
+    backdrop-filter: invert(1) brightness(0.78);
+    background: rgba(0, 0, 0, 0.08);
+    border: 0;
     border-radius: 50%;
     display: flex;
-    height: 30px;
+    height: 62px;
     justify-content: center;
     left: 0;
     opacity: 0;
@@ -77,18 +84,19 @@
     position: fixed;
     top: 0;
     transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-50%, -50%);
-    transition: width 160ms ease, height 160ms ease, background 160ms ease, border-color 160ms ease, opacity 120ms ease, transform 80ms linear;
-    width: 30px;
+    transition: width 180ms ease, height 180ms ease, opacity 120ms ease, transform 80ms linear;
+    width: 62px;
     z-index: 1000;
   }
 
-  .cursor-core {
-    background: var(--accent);
-    border: 1px solid var(--ink);
+  .custom-cursor::after {
+    border: 1px solid rgba(255, 253, 247, 0.9);
     border-radius: 50%;
-    height: 6px;
-    transition: transform 160ms ease;
-    width: 6px;
+    content: '';
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
   }
 
   .custom-cursor.is-visible {
@@ -96,19 +104,28 @@
   }
 
   .custom-cursor.is-active {
-    background: var(--lime);
-    border-color: var(--ink);
-    height: 52px;
-    width: 52px;
-  }
-
-  .custom-cursor.is-active .cursor-core {
-    transform: scale(0.65);
+    height: 78px;
+    width: 78px;
   }
 
   .custom-cursor.is-pressed {
-    height: 22px;
-    width: 22px;
+    height: 48px;
+    width: 48px;
+  }
+
+  .custom-cursor.is-clicked::after {
+    animation: cursor-pulse 450ms ease-out;
+  }
+
+  @keyframes cursor-pulse {
+    0% {
+      opacity: 0.85;
+      transform: scale(0.75);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.7);
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
