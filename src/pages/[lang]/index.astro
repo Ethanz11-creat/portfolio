@@ -53,9 +53,105 @@ const workbenchItems: Array<{
         <a href={`/${locale}/blog/`} class="all-link">{t(locale, 'blog.all')} →</a>
       </div>
     </section>
+    <section id="tooling" class="section">
+      <div class="container">
+        <SectionHeader num="03" title={locale === 'zh' ? 'AI Coding 工具与开发习惯' : 'AI Coding Tools & Dev Habits'} desc={locale === 'zh' ? '我在终端里怎么用 AI 干活——工具清单、套餐取舍与当前的使用范式' : 'How I actually use AI in the terminal — the tools, the plans, and my current setup'} />
+        {locale === 'zh' ? (
+          <div class="tooling-body">
+            <p class="tooling-lead">我习惯在<strong>终端命令行</strong>里跑代码。所有 AI coding Agent 都住在同一个终端里，我靠一套自洽的工具链调度它们。</p>
+
+            <h3 class="tooling-h3">用到的开源工具</h3>
+            <div class="tool-list">
+              <div class="tool-card">
+                <span class="tool-tag t-multi">终端多路复用器</span>
+                <h4><a href="https://github.com/ogulcancelik/herdr" target="_blank" rel="noopener">herdr</a></h4>
+                <p>Agent 专属的终端复用器：把多个 coding Agent 放进同一屏，实时显示 blocked / working / done 状态，哪个卡住等确认一眼看到；session 可 detach/reattach，断线不丢进度。我日常就是一个 pane 一个 Agent，靠状态灯而不是轮询来调度注意力。</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-dsh">Agent 框架 + TUI</span>
+                <h4><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">dsh · DeepSeek Harness</a> / <a href="https://github.com/Ethanz11-creat/dsh-billing-tui" target="_blank" rel="noopener">dsh-billing-tui</a></h4>
+                <p>DeepSeek 官方的 Agent Harness，一切皆插件；我主要是通过它的 TUI 用它跑 DeepSeek 模型。我还给它写了一个 <a href="https://github.com/Ethanz11-creat/dsh-billing-tui" target="_blank" rel="noopener">dsh-billing-tui</a>：按峰谷分时计价实时算 token 费用并在状态栏显示，编码时心里有数。</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-codex">主 Agent</span>
+                <h4><a href="https://github.com/openai/codex" target="_blank" rel="noopener">Codex CLI</a></h4>
+                <p>OpenAI 的终端编码 Agent。我拿它当<strong>主 Agent / 决策者</strong>：制定计划、分解任务、做验收。纯终端、支持 AGENTS.md 指令、沙箱与审批策略，适合做"先想清楚再动手"的角色。</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-claude">子 Agent / 探索</span>
+                <h4><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code</a></h4>
+                <p>Anthropic 的终端编码 Agent。Skills、CLAUDE.md、子代理生态成熟，我拿它做探索与"洗 AI 味"这类需要设计判断的活，或者跟 Codex 交叉审查。</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-browser">浏览器自动化</span>
+                <h4><a href="https://github.com/citrolabs/ego-lite" target="_blank" rel="noopener">ego lite</a></h4>
+                <p>让 Agent 直接用我登录态的浏览器，在独立 Space 里跑自动化任务，不跟我抢标签页。给 Agent 做真实导航、截图、填表验证前端时我在用。</p>
+              </div>
+            </div>
+
+            <h3 class="tooling-h3">体验过的 Coding 套餐</h3>
+            <p class="tooling-p">我用过 <strong>Claude 20x</strong> 和 <strong>GPT 20x</strong> 的高档套餐——确实强，但 20x 的价格对我是明显负担。财力有限的前提下，稳定用下来的是两个 <strong>20 美元档</strong>：<strong>ChatGPT Plus（$20）</strong> + <strong>Ollama Pro（$20）</strong> 的 coding plan。</p>
+
+            <h3 class="tooling-h3">当前的使用范式</h3>
+            <p class="tooling-p"><strong>当一个套餐配额不够时，我把"强推理 + 便宜执行"拆开用：</strong></p>
+            <ul class="tooling-ul">
+              <li><strong>主力执行</strong>：在 herdr 的一个 pane 里，用 <strong>dsh-tui</strong> 调 <strong>Ollama Cloud 的 DeepSeek V4 正式版</strong>跑重活（写代码、批量处理），成本低、跑得久不怕烧钱。</li>
+              <li><strong>决策与验收</strong>：同一个 herdr session 里再开一个 pane，<strong>Codex</strong> 作为主 Agent 负责决策、拆计划、做代码评审和最后验收——只在关键节点用贵额度，省着花。</li>
+              <li><strong>子 Agent 执行</strong>：把 <strong>DeepSeek V4 Flash 正式版</strong>当子 Agent，交给我拆好的小块任务执行，然后回传给 Codex 验收。</li>
+            </ul>
+            <p class="tooling-p">一句话：终端是主场，herdr 是调度台，代码/贵额度当大脑，DeepSeek 的便宜模型当手脚——预算有限反而逼出了更清晰的"谁负责想、谁负责干"的分工。</p>
+          </div>
+        ) : (
+          <div class="tooling-body">
+            <p class="tooling-lead">I work in the <strong>terminal</strong>. All my AI coding agents live in the same terminal, and I orchestrate them with one self-contained toolchain.</p>
+
+            <h3 class="tooling-h3">Open-source tools I use</h3>
+            <div class="tool-list">
+              <div class="tool-card">
+                <span class="tool-tag t-multi">Terminal multiplexer</span>
+                <h4><a href="https://github.com/ogulcancelik/herdr" target="_blank" rel="noopener">herdr</a></h4>
+                <p>An agent-aware terminal multiplexer: run multiple coding agents side by side with live blocked / working / done status, so I know in one glance which one is waiting for me. Sessions detach/reattach, so nothing is lost on disconnect. One agent per pane, scheduled by status lights instead of polling.</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-dsh">Agent framework + TUI</span>
+                <h4><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">dsh · DeepSeek Harness</a> / <a href="https://github.com/Ethanz11-creat/dsh-billing-tui" target="_blank" rel="noopener">dsh-billing-tui</a></h4>
+                <p>DeepSeek's official Agent Harness — everything is a plugin. I mainly drive DeepSeek models through its TUI, and I wrote a <a href="https://github.com/Ethanz11-creat/dsh-billing-tui" target="_blank" rel="noopener">dsh-billing-tui</a>: it computes real-time token cost with peak/off-peak metering and shows it in the status bar.</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-codex">Main agent</span>
+                <h4><a href="https://github.com/openai/codex" target="_blank" rel="noopener">Codex CLI</a></h4>
+                <p>OpenAI's terminal coding agent. I use it as the <strong>main agent / decision-maker</strong>: making plans, breaking down tasks, and doing acceptance. Pure terminal, supports AGENTS.md, sandboxing and approval policies — good for a "think first, then act" role.</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-claude">Sub agent / exploration</span>
+                <h4><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener">Claude Code</a></h4>
+                <p>Anthropic's terminal coding agent. Mature Skills, CLAUDE.md and subagent ecosystem — I use it for exploration and for design-sensitive work like de-AI-ifying the frontend, or for cross-review with Codex.</p>
+              </div>
+              <div class="tool-card">
+                <span class="tool-tag t-browser">Browser automation</span>
+                <h4><a href="https://github.com/citrolabs/ego-lite" target="_blank" rel="noopener">ego lite</a></h4>
+                <p>Lets agents drive a browser that reuses my logged-in state, running automation in their own Space without fighting me for tabs. I use it for real navigation, screenshots and form-filling when verifying UI.</p>
+              </div>
+            </div>
+
+            <h3 class="tooling-h3">Coding plans I've tried</h3>
+            <p class="tooling-p">I've used the higher-end <strong>Claude 20x</strong> and <strong>GPT 20x</strong> tiers — powerful, but at a price that's hard to justify. On a budget, my stable setup is two <strong>$20 tiers</strong>: <strong>ChatGPT Plus</strong> + the <strong>Ollama Pro coding plan</strong>.</p>
+
+            <h3 class="tooling-h3">My current setup</h3>
+            <p class="tooling-p"><strong>When a single plan's quota isn't enough, I split "strong reasoning" from "cheap execution":</strong></p>
+            <ul class="tooling-ul">
+              <li><strong>Heavy lifting</strong>: in one herdr pane, <strong>dsh-tui</strong> calls <strong>Ollama Cloud's DeepSeek V4 (official)</strong> for the bulk work — writing code, batch processing — low cost, fine to run long.</li>
+              <li><strong>Decisions &amp; acceptance</strong>: another pane in the same herdr session runs <strong>Codex</strong> as the main agent — deciding, decomposing, reviewing and accepting. I only spend the expensive quota at the key checkpoints.</li>
+              <li><strong>Execution sub-agents</strong>: <strong>DeepSeek V4 Flash (official)</strong> acts as sub-agents for the small tasks I hand it, reporting back to Codex for acceptance.</li>
+            </ul>
+            <p class="tooling-p">In short: the terminal is home base, herdr is the control room, expensive models are the brain, and DeepSeek's cheap models are the hands — a tight budget pushed me into a cleaner "who thinks, who does" split.</p>
+          </div>
+        )}
+      </div>
+    </section>
     <section id="about" class="section">
       <div class="container">
-        <SectionHeader num="03" title={t(locale, 'section.about')} />
+        <SectionHeader num="04" title={t(locale, 'section.about')} />
         {locale === 'zh' ? (
           <div class="about-body">
             <p class="about-lead">你好，我是赵一恒——厦门大学电子信息类硕士，研究方向 LLM / RAG / Agent。我用 AI 构建 Agent，也构建一切，把「怎么做 Agent」的方法论和作品一起沉淀在这里。</p>
@@ -292,7 +388,75 @@ const workbenchItems: Array<{
   }
   .about-cta { margin-top: 0.5rem; font-size: 0.95rem; color: var(--ink-secondary); }
   .about-cta a { color: var(--accent-deep); font-weight: 600; }
+  .tooling-body { max-width: 920px; }
+  .tooling-lead {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+    margin: 0 0 2.5rem;
+    max-width: 30em;
+  }
+  .tooling-lead strong { color: var(--accent-deep); }
+  .tooling-h3 {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 2.25rem 0 1.25rem;
+  }
+  .tooling-h3:first-of-type { margin-top: 0; }
+  .tool-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+  .tool-card {
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 1.1rem 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .tool-tag {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.5rem;
+    border-radius: 3px;
+  }
+  .t-multi { background: var(--lime); color: var(--ink); }
+  .t-dsh { background: var(--lavender); color: var(--ink); }
+  .t-codex { background: var(--butter); color: var(--ink); }
+  .t-claude { background: var(--paper); color: var(--ink); }
+  .t-browser { background: var(--lime); color: var(--ink); }
+  .tool-card h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .tool-card h4 a { color: var(--accent-deep); text-decoration: none; }
+  .tool-card h4 a:hover { text-decoration: underline; }
+  .tool-card p { font-size: 0.88rem; line-height: 1.7; color: var(--ink-secondary); margin: 0; }
+  .tool-card p a { color: var(--accent-deep); font-weight: 600; }
+  .tooling-p { font-size: 1rem; line-height: 1.85; color: var(--ink-secondary); margin: 0 0 1rem; max-width: 44em; }
+  .tooling-p strong { color: var(--ink); font-weight: 600; }
+  .tooling-ul { margin: 0.25rem 0 1.25rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.7rem; max-width: 44em; }
+  .tooling-ul li { font-size: 0.95rem; line-height: 1.75; color: var(--ink-secondary); }
+  .tooling-ul li strong { color: var(--ink); font-weight: 600; }
   @media (max-width: 900px) {
+    .tool-list { grid-template-columns: 1fr; }
     .project-grid {
       grid-template-columns: 1fr;
     }
