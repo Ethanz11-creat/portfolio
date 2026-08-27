@@ -44,9 +44,33 @@ const workbenchItems: Array<{
         </div>
       </div>
     </section>
+    <section id="contributions" class="section">
+      <div class="container">
+        <SectionHeader num="02" title={locale === 'zh' ? '开源贡献' : 'Open Source'} desc={locale === 'zh' ? '我给开源项目提过并合入的 PR——真实落地、能让人 review 的代码贡献' : 'Pull requests I opened and got merged into open-source projects'} />
+        <div class="contrib-list">
+          <a class="contrib-card" href="https://github.com/mem0ai/mem0/pull/7054" target="_blank" rel="noopener" data-reveal>
+            <div class="contrib-head">
+              <span class="contrib-repo">mem0 / mem0</span>
+              <span class="contrib-status">MERGED</span>
+            </div>
+            <h4>fix(docs): balance code fences in cookbook_template.mdx <span class="contrib-num">#7054</span></h4>
+            {locale === 'zh' ? (
+              <p>修复 mem0 文档模板 <code>cookbook_template.mdx</code> 中未闭合的 <code>```mdx</code> 代码围栏导致渲染错乱的问题——它是 13 个模板里唯一一个 fence 不平衡的。纯 docs 修复，已通过 review 并合并进 main，作为我第一个落地的开源贡献。</p>
+            ) : (
+              <p>Fixed the unbalanced <code>```mdx</code> fence in mem0's <code>cookbook_template.mdx</code> — the only one of 13 templates with broken rendering. Docs-only, review approved, merged into main as my first shipped open-source contribution.</p>
+            )}
+            <div class="contrib-meta">
+              <span>review ✓ APPROVED</span>
+              <span>2026-08-22</span>
+              <span>+2 −3</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
     <section id="blog" class="section">
       <div class="container">
-        <SectionHeader num="02" title={t(locale, 'section.blog')} desc={t(locale, 'section.blog.desc')} />
+        <SectionHeader num="03" title={t(locale, 'section.blog')} desc={t(locale, 'section.blog.desc')} />
         <div class="blog-list">
           {posts.map((post) => <BlogCard entry={post} />)}
         </div>
@@ -55,7 +79,7 @@ const workbenchItems: Array<{
     </section>
     <section id="tooling" class="section">
       <div class="container">
-        <SectionHeader num="03" title={locale === 'zh' ? 'AI Coding 工具与开发习惯' : 'AI Coding Tools & Dev Habits'} desc={locale === 'zh' ? '我在终端里怎么用 AI 干活——工具清单、套餐取舍与当前的使用范式' : 'How I actually use AI in the terminal — the tools, the plans, and my current setup'} />
+        <SectionHeader num="04" title={locale === 'zh' ? 'AI Coding 工具与开发习惯' : 'AI Coding Tools & Dev Habits'} desc={locale === 'zh' ? '我在终端里怎么用 AI 干活——工具清单、套餐取舍与当前的使用范式' : 'How I actually use AI in the terminal — the tools, the plans, and my current setup'} />
         {locale === 'zh' ? (
           <div class="tooling-body">
             <p class="tooling-lead">我习惯在<strong>终端命令行</strong>里跑代码。所有 AI coding Agent 都住在同一个终端里，我靠一套自洽的工具链调度它们。</p>
@@ -151,7 +175,7 @@ const workbenchItems: Array<{
     </section>
     <section id="about" class="section">
       <div class="container">
-        <SectionHeader num="04" title={t(locale, 'section.about')} />
+        <SectionHeader num="05" title={t(locale, 'section.about')} />
         {locale === 'zh' ? (
           <div class="about-body">
             <p class="about-lead">你好，我是赵一恒——厦门大学电子信息类硕士，研究方向 LLM / RAG / Agent。我用 AI 构建 Agent，也构建一切，把「怎么做 Agent」的方法论和作品一起沉淀在这里。</p>
@@ -455,6 +479,69 @@ const workbenchItems: Array<{
   .tooling-ul { margin: 0.25rem 0 1.25rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.7rem; max-width: 44em; }
   .tooling-ul li { font-size: 0.95rem; line-height: 1.75; color: var(--ink-secondary); }
   .tooling-ul li strong { color: var(--ink); font-weight: 600; }
+  .contrib-list { display: flex; flex-direction: column; gap: 1.2rem; max-width: 920px; }
+  .contrib-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 1.35rem 1.4rem;
+    background: var(--paper);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .contrib-card:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 var(--ink); }
+  .contrib-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .contrib-repo {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+  }
+  .contrib-status {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--lime);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    padding: 0.2rem 0.5rem;
+  }
+  .contrib-card h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--ink);
+  }
+  .contrib-num { color: var(--accent-deep); }
+  .contrib-card p { font-size: 0.92rem; line-height: 1.75; color: var(--ink-secondary); margin: 0; max-width: 60em; }
+  .contrib-card p code {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    background: var(--butter);
+    border: 1px solid var(--ink);
+    border-radius: 3px;
+    padding: 0 0.28rem;
+  }
+  .contrib-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.2rem; }
+  .contrib-meta span {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--accent-deep);
+  }
   @media (max-width: 900px) {
     .tool-list { grid-template-columns: 1fr; }
     .project-grid {
