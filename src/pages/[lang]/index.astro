@@ -51,18 +51,68 @@ const workbenchItems: Array<{
           <a class="contrib-card" href="https://github.com/mem0ai/mem0/pull/7054" target="_blank" rel="noopener" data-reveal>
             <div class="contrib-head">
               <span class="contrib-repo">mem0 / mem0</span>
-              <span class="contrib-status">MERGED</span>
+              <span class="contrib-status s-merged">MERGED</span>
             </div>
             <h4>fix(docs): balance code fences in cookbook_template.mdx <span class="contrib-num">#7054</span></h4>
-            {locale === 'zh' ? (
-              <p>修复 mem0 文档模板 <code>cookbook_template.mdx</code> 中未闭合的 <code>```mdx</code> 代码围栏导致渲染错乱的问题——它是 13 个模板里唯一一个 fence 不平衡的。纯 docs 修复，已通过 review 并合并进 main，作为我第一个落地的开源贡献。</p>
-            ) : (
-              <p>Fixed the unbalanced <code>```mdx</code> fence in mem0's <code>cookbook_template.mdx</code> — the only one of 13 templates with broken rendering. Docs-only, review approved, merged into main as my first shipped open-source contribution.</p>
-            )}
+            <p>{locale === 'zh' ? '修复 mem0 文档模板中未闭合的代码围栏导致渲染错乱的问题——纯 docs 修复，已通过 review 并合并进 main，是我第一个落地的开源贡献。' : 'Fixed the unbalanced code fence in mem0\u2019s docs template that broke rendering. Docs-only, review approved, merged into main as my first shipped contribution.'}</p>
             <div class="contrib-meta">
               <span>review ✓ APPROVED</span>
               <span>2026-08-22</span>
               <span>+2 −3</span>
+            </div>
+          </a>
+
+          <a class="contrib-card" href="https://github.com/OpenHands/OpenHands/pull/16986" target="_blank" rel="noopener" data-reveal>
+            <div class="contrib-head">
+              <span class="contrib-repo">OpenHands / OpenHands · 130k★</span>
+              <span class="contrib-status s-open">OPEN</span>
+            </div>
+            <h4>fix(security): redact query secrets when MCP URL userinfo has a lone percent <span class="contrib-num">#16986</span></h4>
+            <p>{locale === 'zh' ? '修复 MCP URL 中用户信息出现孤立百分号时查询密钥未脱敏的安全问题。130k★ 级项目的完整 CI（含 Docker 构建、三平台 test-and-build、E2E）全绿，等待 maintainer review。' : 'Fixed query secrets not being redacted when an MCP URL userinfo holds a lone percent. Full CI on a 130k★ repo (docker build, 3-platform test-and-build, E2E) all green; awaiting review.'}</p>
+            <div class="contrib-meta">
+              <span>CI 全绿</span>
+              <span>2026-08-28</span>
+              <span>等 review</span>
+            </div>
+          </a>
+
+          <a class="contrib-card" href="https://github.com/OpenHands/OpenHands/pull/16987" target="_blank" rel="noopener" data-reveal>
+            <div class="contrib-head">
+              <span class="contrib-repo">OpenHands / OpenHands · 130k★</span>
+              <span class="contrib-status s-open">OPEN</span>
+            </div>
+            <h4>fix(ci): count each test once in DoneMarkerReporter so flaky retries don't end the E2E early <span class="contrib-num">#16987</span></h4>
+            <p>{locale === 'zh' ? '修复 CI 评测计数器在 flaky 重试时重复计数、过早结束 E2E 的问题，让每次 E2E 真正跑完再判定。CI 全绿，等待 review。' : 'Fixed the CI reporter double-counting tests on flaky retries, which ended E2E early — now each test counts once so the suite runs to completion. CI green; awaiting review.'}</p>
+            <div class="contrib-meta">
+              <span>CI 全绿</span>
+              <span>2026-08-28</span>
+              <span>等 review</span>
+            </div>
+          </a>
+
+          <a class="contrib-card" href="https://github.com/browser-use/bubus/pull/34" target="_blank" rel="noopener" data-reveal>
+            <div class="contrib-head">
+              <span class="contrib-repo">browser-use / bubus</span>
+              <span class="contrib-status s-open">OPEN</span>
+            </div>
+            <h4>fix(eventbus): only drain events in the waiting chain, not all buses <span class="contrib-num">#34</span></h4>
+            <p>{locale === 'zh' ? '修复 EventBus 排空循环在处理等待链时误处理所有 bus 的跨事件循环污染问题——在多个并行 agent 会话下会窃取其它 bus 的调度。安全检查通过，等待 review。' : 'Fixed cross-loop contamination in EventBus\u2019s drain loop, which processed every bus instead of only the waiting chain and stole scheduling from parallel agent sessions. Security checks pass; awaiting review.'}</p>
+            <div class="contrib-meta">
+              <span>安全检查 ✓</span>
+              <span>等 review</span>
+            </div>
+          </a>
+
+          <a class="contrib-card" href="https://github.com/bytedance/deer-flow/pull/4926" target="_blank" rel="noopener" data-reveal>
+            <div class="contrib-head">
+              <span class="contrib-repo">bytedance / deer-flow</span>
+              <span class="contrib-status s-open">OPEN</span>
+            </div>
+            <h4>fix(memory): stop deleted agents from being resurrected by late memory writes <span class="contrib-num">#4926</span></h4>
+            <p>{locale === 'zh' ? '修复删除 agent 后延迟落盘的内存写入仍会重建其目录、导致同名 agent 无法重建的问题。检查全绿，等待 maintainer 再次 review。' : 'Fixed late memory writes resurrecting deleted agents by re-creating their directory and blocking same-name re-creation. All checks green; awaiting maintainer review.'}</p>
+            <div class="contrib-meta">
+              <span>检查全绿</span>
+              <span>等 maintainer review</span>
             </div>
           </a>
         </div>
@@ -515,6 +565,8 @@ const workbenchItems: Array<{
     border-radius: 3px;
     padding: 0.2rem 0.5rem;
   }
+  .contrib-status.s-merged { background: var(--lime); }
+  .contrib-status.s-open { background: var(--butter); }
   .contrib-card h4 {
     font-family: var(--font-display);
     font-weight: 500;
