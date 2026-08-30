@@ -1,5 +1,6 @@
 :root {
   /* ========== 一明 · 白天模式 ========== */
+  color-scheme: light;
   --bg: #f7f5ed;
   --paper: #fffdf7;
   --ink: #172019;
@@ -24,12 +25,9 @@
   --pixel-shadow: #d66af5;
   --card-hover-shadow: rgba(79, 124, 255, 0.12);
   --hero-grid: rgba(23, 32, 25, 0.075);
-  --pixel-border: var(--ink);
 
   --radius: 5px;
   --shadow: 4px 5px 0 rgba(23, 32, 25, 0.13);
-  --cursor-outer: rgba(0, 0, 0, 0.08);
-  --cursor-inner: rgba(23, 32, 25, 0.9);
 
   --pn-inactive: #b9b6a6;
   --pn-active: var(--accent);
@@ -47,15 +45,16 @@
    信号色降饱和 40~50%，accent 从荧光紫降为蓝灰紫。
    刻意不做纯黑 + 纯白，降低对比硬度过暗环境眼疲劳。 */
 [data-theme='dark'] {
+  color-scheme: dark;
   --bg: #121813;
   --paper: #1a2119;
   --ink: #d9d6c8;
   --ink-secondary: #7d887a;
-  --accent: #a888d4;           /* 原 #e77bff 降饱和变暗 → 蓝灰紫 */
-  --accent-deep: #a4c9a0;      /* 原 #9fd3b0 微调，暗色下"强调次要" */
-  --lime: #6f8f4a;             /* 原 #d8ff9c 降饱和 → 暗橄榄绿 */
-  --butter: #b89a47;           /* 原 #ffd45b 降饱和 → 暗金棕 */
-  --lavender: #8c74a8;         /* 原 #d8b2ff 降饱和 → 灰紫罗兰 */
+  --accent: #a888d4;           /* light #d66af5 → 降饱和变暗的蓝灰紫 */
+  --accent-deep: #a4c9a0;      /* light #3b493d → 调成浅灰绿作次级强调 */
+  --lime: #6f8f4a;             /* light #d8ff9c → 暗橄榄绿 */
+  --butter: #b89a47;           /* light #ffd45b → 暗金棕 */
+  --lavender: #8c74a8;         /* light #d8b2ff → 灰紫罗兰 */
   --line: #2a3228;
   --surface-soft: #212a1f;
   --dark: #0a0e0a;
@@ -71,11 +70,8 @@
   --pixel-shadow: #5a4a7a;     /* accent 变暗紫，pixel-dot 阴影不再发光 */
   --card-hover-shadow: rgba(168, 136, 212, 0.22);
   --hero-grid: rgba(217, 214, 200, 0.06);
-  --pixel-border: var(--ink);
 
   --shadow: 4px 5px 0 rgba(0, 0, 0, 0.35);
-  --cursor-outer: rgba(217, 214, 200, 0.1);
-  --cursor-inner: rgba(217, 214, 200, 0.85);
 
   --pn-inactive: #3a4338;
   --pn-active: var(--accent);

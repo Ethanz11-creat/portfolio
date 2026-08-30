@@ -29,11 +29,14 @@ const lang = getLangFromUrl(Astro.url);
     <script is:inline>
       // 首帧前应用主题，避免暗色模式闪白（一明/一暗）
       (function () {
+        var t = null;
         try {
-          var t = localStorage.getItem('theme');
-          var dark = t === 'dark' || (t === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (dark) document.documentElement.setAttribute('data-theme', 'dark');
-        } catch (e) {}
+          t = localStorage.getItem('theme');
+        } catch (e) {
+          // 存储不可用时按系统偏好走
+        }
+        var dark = t === 'dark' || (t === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.setAttribute('data-theme', 'dark');
       })();
     </script>
   </head>

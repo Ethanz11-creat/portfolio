@@ -72,7 +72,21 @@ const { locale } = Astro.props;
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     btn?.setAttribute('aria-pressed', String(dark));
   };
-  const readStored = () => localStorage.getItem(STORAGE);
+  // localStorage 在隐私模式/禁用存储下可能抛异常，需兜底
+  const readStored = (): string | null => {
+    try {
+      return localStorage.getItem(STORAGE);
+    } catch {
+      return null;
+    }
+  };
+  const writeStored = (value: string) => {
+    try {
+      localStorage.setItem(STORAGE, value);
+    } catch {
+      /* 存储不可用时静默忽略，仍保持本次会话的主题 */
+    }
+  };
   // 初值优先 user 选择，其次系统偏好
   const stored = readStored();
   if (stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -84,6 +98,6 @@ const { locale } = Astro.props;
     const dark = document.documentElement.getAttribute('data-theme') === 'dark';
     const next = !dark;
     apply(next);
-    localStorage.setItem(STORAGE, next ? 'dark' : 'light');
+    writeStored(next ? 'dark' : 'light');
   });
 </script>
