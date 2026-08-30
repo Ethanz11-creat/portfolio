@@ -70,7 +70,9 @@
     --cursor-x: -100px;
     --cursor-y: -100px;
     align-items: center;
-    background: var(--cursor-outer);
+    -webkit-backdrop-filter: invert(1) brightness(0.78);
+    backdrop-filter: invert(1) brightness(0.78);
+    background: rgba(0, 0, 0, 0.08);
     border: 0;
     border-radius: 50%;
     display: flex;
@@ -88,7 +90,7 @@
   }
 
   .custom-cursor::after {
-    border: 1px solid var(--cursor-inner);
+    border: 1px solid rgba(255, 253, 247, 0.9);
     border-radius: 50%;
     content: '';
     inset: 0;
