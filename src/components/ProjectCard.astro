@@ -35,7 +35,7 @@ const href = `/${entry.id.split('/')[0]}/projects/${entry.id.split('/')[1]}/`;
 <style>
   .project-card {
     display: block;
-    background: #fff;
+    background: var(--paper);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -45,7 +45,7 @@ const href = `/${entry.id.split('/')[0]}/projects/${entry.id.split('/')[1]}/`;
   .project-card:hover {
     transform: translateY(-4px);
     border-color: var(--accent);
-    box-shadow: 0 8px 24px rgba(79, 124, 255, 0.12);
+    box-shadow: 0 8px 24px var(--card-hover-shadow);
   }
   .project-card.featured {
     grid-column: span 2;

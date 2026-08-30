@@ -53,7 +53,7 @@ const { locale, workbenchItems } = Astro.props;
 <style>
   .hero {
     background-color: var(--bg);
-    background-image: linear-gradient(rgba(23, 32, 25, 0.075) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 32, 25, 0.075) 1px, transparent 1px);
+    background-image: linear-gradient(var(--hero-grid) 1px, transparent 1px), linear-gradient(90deg, var(--hero-grid) 1px, transparent 1px);
     background-size: 28px 28px;
     min-height: min(900px, 100svh);
     padding: clamp(8rem, 16vh, 11rem) 0 clamp(4.5rem, 9vh, 7rem);
@@ -75,7 +75,7 @@ const { locale, workbenchItems } = Astro.props;
     letter-spacing: 0.14em;
     color: var(--ink-secondary);
   }
-  .pixel-dot { width: 9px; height: 9px; background: var(--lime); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--accent); margin-right: 9px; }
+  .pixel-dot { width: 9px; height: 9px; background: var(--lime); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--pixel-shadow); margin-right: 9px; }
   .hero-title {
     font-family: var(--font-display);
     font-size: clamp(3.4rem, 6.1vw, 6.4rem);

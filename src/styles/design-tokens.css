@@ -1,4 +1,5 @@
 :root {
+  /* ========== 一明 · 白天模式 ========== */
   --bg: #f7f5ed;
   --paper: #fffdf7;
   --ink: #172019;
@@ -11,6 +12,7 @@
   --line: #cfcfc3;
   --surface-soft: #efeee5;
   --dark: #172019;
+
   --nav-bg: rgba(247, 245, 237, 0.9);
   --switch-bg: rgba(247, 245, 237, 0.92);
   --switch-ink: #333;
@@ -18,8 +20,17 @@
   --switch-active-bg: #1f2330;
   --switch-active-ink: #fff;
   --switch-sep: rgba(0, 0, 0, 0.4);
+
+  --pixel-shadow: #d66af5;
+  --card-hover-shadow: rgba(79, 124, 255, 0.12);
+  --hero-grid: rgba(23, 32, 25, 0.075);
+  --pixel-border: var(--ink);
+
   --radius: 5px;
   --shadow: 4px 5px 0 rgba(23, 32, 25, 0.13);
+  --cursor-outer: rgba(0, 0, 0, 0.08);
+  --cursor-inner: rgba(23, 32, 25, 0.9);
+
   --font-sans: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
   --font-display: Georgia, 'Songti SC', 'STSong', serif;
   --font-mono: 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
@@ -27,26 +38,38 @@
   --space-section: clamp(6rem, 10vw, 10rem);
 }
 
-/* 一暗 · 夜间模式 */
+/* ========== 一暗 · 夜间模式 ==========
+   整体策略：灰墨绿底（#121813）+ 柔米白字（#d9d6c8），
+   信号色降饱和 40~50%，accent 从荧光紫降为蓝灰紫。
+   刻意不做纯黑 + 纯白，降低对比硬度过暗环境眼疲劳。 */
 [data-theme='dark'] {
-  --bg: #0f140f;
-  --paper: #171e16;
-  --ink: #ece9de;
-  --ink-secondary: #9aa596;
-  --accent: #e77bff;
-  --accent-deep: #9fd3b0;
-  --lime: #c9f28a;
-  --butter: #ffd45b;
-  --lavender: #d8b2ff;
-  --line: #2c352c;
-  --surface-soft: #1e271e;
+  --bg: #121813;
+  --paper: #1a2119;
+  --ink: #d9d6c8;
+  --ink-secondary: #7d887a;
+  --accent: #a888d4;           /* 原 #e77bff 降饱和变暗 → 蓝灰紫 */
+  --accent-deep: #a4c9a0;      /* 原 #9fd3b0 微调，暗色下"强调次要" */
+  --lime: #6f8f4a;             /* 原 #d8ff9c 降饱和 → 暗橄榄绿 */
+  --butter: #b89a47;           /* 原 #ffd45b 降饱和 → 暗金棕 */
+  --lavender: #8c74a8;         /* 原 #d8b2ff 降饱和 → 灰紫罗兰 */
+  --line: #2a3228;
+  --surface-soft: #212a1f;
   --dark: #0a0e0a;
-  --nav-bg: rgba(15, 20, 15, 0.86);
-  --switch-bg: rgba(15, 20, 15, 0.86);
-  --switch-ink: #ece9de;
-  --switch-border: rgba(236, 233, 222, 0.35);
-  --switch-active-bg: #ece9de;
-  --switch-active-ink: #0f140f;
-  --switch-sep: rgba(236, 233, 222, 0.4);
-  --shadow: 4px 5px 0 rgba(0, 0, 0, 0.4);
+
+  --nav-bg: rgba(18, 24, 19, 0.88);
+  --switch-bg: rgba(18, 24, 19, 0.88);
+  --switch-ink: #d9d6c8;
+  --switch-border: rgba(217, 214, 200, 0.3);
+  --switch-active-bg: #d9d6c8;
+  --switch-active-ink: #121813;
+  --switch-sep: rgba(217, 214, 200, 0.35);
+
+  --pixel-shadow: #5a4a7a;     /* accent 变暗紫，pixel-dot 阴影不再发光 */
+  --card-hover-shadow: rgba(168, 136, 212, 0.22);
+  --hero-grid: rgba(217, 214, 200, 0.06);
+  --pixel-border: var(--ink);
+
+  --shadow: 4px 5px 0 rgba(0, 0, 0, 0.35);
+  --cursor-outer: rgba(217, 214, 200, 0.1);
+  --cursor-inner: rgba(217, 214, 200, 0.85);
 }
