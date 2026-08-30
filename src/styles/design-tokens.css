@@ -11,6 +11,13 @@
   --line: #cfcfc3;
   --surface-soft: #efeee5;
   --dark: #172019;
+  --nav-bg: rgba(247, 245, 237, 0.9);
+  --switch-bg: rgba(247, 245, 237, 0.92);
+  --switch-ink: #333;
+  --switch-border: rgba(20, 20, 20, 0.55);
+  --switch-active-bg: #1f2330;
+  --switch-active-ink: #fff;
+  --switch-sep: rgba(0, 0, 0, 0.4);
   --radius: 5px;
   --shadow: 4px 5px 0 rgba(23, 32, 25, 0.13);
   --font-sans: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
@@ -18,4 +25,28 @@
   --font-mono: 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
   --container: 1200px;
   --space-section: clamp(6rem, 10vw, 10rem);
+}
+
+/* 一暗 · 夜间模式 */
+[data-theme='dark'] {
+  --bg: #0f140f;
+  --paper: #171e16;
+  --ink: #ece9de;
+  --ink-secondary: #9aa596;
+  --accent: #e77bff;
+  --accent-deep: #9fd3b0;
+  --lime: #c9f28a;
+  --butter: #ffd45b;
+  --lavender: #d8b2ff;
+  --line: #2c352c;
+  --surface-soft: #1e271e;
+  --dark: #0a0e0a;
+  --nav-bg: rgba(15, 20, 15, 0.86);
+  --switch-bg: rgba(15, 20, 15, 0.86);
+  --switch-ink: #ece9de;
+  --switch-border: rgba(236, 233, 222, 0.35);
+  --switch-active-bg: #ece9de;
+  --switch-active-ink: #0f140f;
+  --switch-sep: rgba(236, 233, 222, 0.4);
+  --shadow: 4px 5px 0 rgba(0, 0, 0, 0.4);
 }

@@ -2,6 +2,7 @@
 import type { Locale } from '../lib/i18n';
 import { t } from '../lib/i18n';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   locale: Locale;
@@ -20,6 +21,7 @@ const links = [
     <nav class="nav-links">
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
       <LanguageSwitcher locale={locale} />
+      <ThemeToggle locale={locale} />
     </nav>
   </div>
 </header>
@@ -46,7 +48,7 @@ const links = [
     transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
   }
   .nav.scrolled {
-    background: rgba(247, 245, 237, 0.9);
+    background: var(--nav-bg);
     backdrop-filter: blur(12px);
     box-shadow: 0 1px 0 var(--line);
   }

@@ -1,0 +1,89 @@
+---
+interface Props {
+  locale: 'zh' | 'en';
+}
+const { locale } = Astro.props;
+---
+<button
+  type="button"
+  class="theme-toggle"
+  id="theme-toggle"
+  aria-label={locale === 'zh' ? '切换一明/一暗' : 'Toggle light/dark'}
+  aria-pressed="false"
+>
+  <span class="tt-icon tt-sun" aria-hidden="true">
+    <!-- 日 · 一明 -->
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M19.4 4.6l-1.8 1.8M6.4 17.6l-1.8 1.8" />
+    </svg>
+  </span>
+  <span class="tt-icon tt-moon" aria-hidden="true">
+    <!-- 月 · 一暗 -->
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+      <path d="M20.6 14.4A8.5 8.5 0 0 1 9.6 3.4 8.5 8.5 0 1 0 20.6 14.4Z" />
+    </svg>
+  </span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: 2px;
+    border-radius: 999px;
+    border: 1.5px solid var(--switch-border);
+    background: var(--switch-bg);
+    color: var(--switch-ink);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    transition: color 0.2s, background 0.2s, border-color 0.2s, transform 0.15s;
+    line-height: 1;
+    padding: 0;
+  }
+  .theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--ink);
+  }
+  .theme-toggle .tt-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .theme-toggle .tt-sun,
+  .theme-toggle .tt-moon {
+    display: none;
+  }
+  /* 一明（日）默认 */
+  .theme-toggle .tt-sun { display: flex; }
+  /* 一暗（月） */
+  [data-theme='dark'] .theme-toggle .tt-sun { display: none; }
+  [data-theme='dark'] .theme-toggle .tt-moon { display: flex; }
+</style>
+
+<script>
+  const btn = document.getElementById('theme-toggle');
+  const STORAGE = 'theme';
+  // 一明 = light（默认），一暗 = dark
+  const apply = (dark: boolean) => {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    btn?.setAttribute('aria-pressed', String(dark));
+  };
+  const readStored = () => localStorage.getItem(STORAGE);
+  // 初值优先 user 选择，其次系统偏好
+  const stored = readStored();
+  if (stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    apply(true);
+  } else {
+    apply(false);
+  }
+  btn?.addEventListener('click', () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = !dark;
+    apply(next);
+    localStorage.setItem(STORAGE, next ? 'dark' : 'light');
+  });
+</script>
