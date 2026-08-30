@@ -1,0 +1,176 @@
+---
+/**
+ * 右侧快速导航 · 01 ~ 05 横线
+ * 5 条横线对应 5 个 section，滚到哪个就把那条变亮变长。
+ * IntersectionObserver 监听 + 点击 smooth scroll。
+ */
+interface SectionDef {
+  id: string;
+  num: string;
+}
+const sections: SectionDef[] = [
+  { id: 'projects', num: '01' },
+  { id: 'contributions', num: '02' },
+  { id: 'blog', num: '03' },
+  { id: 'tooling', num: '04' },
+  { id: 'about', num: '05' },
+];
+---
+<nav class="progress-nav" aria-label="Section navigation">
+  <ul>
+    {sections.map((s, i) => (
+      <li>
+        <a
+          href={`#${s.id}`}
+          class="pn-item"
+          data-pn={s.num}
+          data-pn-id={s.id}
+          aria-label={`${s.num}`}
+          aria-current={i === 0 ? 'true' : undefined}
+        >
+          <span class="pn-label">{s.num}</span>
+          <span class="pn-line"></span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .progress-nav {
+    position: fixed;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    pointer-events: none; /* 容器不拦，子元素才拦 */
+  }
+  .progress-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pn-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .pn-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--ink-secondary);
+    letter-spacing: 0.08em;
+    width: 18px;
+    text-align: right;
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.3s, transform 0.3s, color 0.3s;
+  }
+  .pn-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--pn-inactive);
+    border-radius: 2px;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s ease,
+                box-shadow 0.3s ease;
+  }
+  /* hover 预览 */
+  .pn-item:hover .pn-label {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--accent);
+  }
+  .pn-item:hover .pn-line {
+    width: 38px;
+    background: var(--accent);
+  }
+  /* active：滚到该 section */
+  .pn-item.is-active .pn-label {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--accent);
+  }
+  .pn-item.is-active .pn-line {
+    width: 48px;
+    background: var(--pn-active);
+    box-shadow: 0 0 8px var(--pn-glow);
+  }
+  @media (max-width: 900px) {
+    .progress-nav {
+      right: 14px;
+    }
+    .progress-nav ul {
+      gap: 14px;
+    }
+    .pn-line {
+      width: 16px;
+    }
+    .pn-item:hover .pn-line {
+      width: 28px;
+    }
+    .pn-item.is-active .pn-line {
+      width: 34px;
+    }
+  }
+  @media (max-width: 640px) {
+    .progress-nav {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const SECTIONS = ['projects', 'contributions', 'blog', 'tooling', 'about'];
+  const items: NodeListOf<HTMLElement> = document.querySelectorAll('.pn-item');
+
+  const activate = (id: string) => {
+    items.forEach((el) => {
+      const match = el.dataset.pnId === id;
+      el.classList.toggle('is-active', match);
+      el.setAttribute('aria-current', match ? 'true' : 'false');
+    });
+  };
+
+  // IntersectionObserver：哪个 section 进入中心就激活哪个
+  const els = SECTIONS.map((id) => document.getElementById(id)).filter(Boolean) as Element[];
+
+  if ('IntersectionObserver' in window && els.length) {
+    // threshold 0 = 顶部碰到底部就算进入；加上 rootMargin 让"中心"更合理
+    const io = new IntersectionObserver(
+      (entries) => {
+        // 选 intersecting 且 ratio 最高的那个作为当前 active
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) activate(visible[0].target.id);
+      },
+      {
+        rootMargin: '-40% 0px -50% 0px', // 可视中心区（顶部 40% 底部 50% 忽略）
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      }
+    );
+    els.forEach((el) => io.observe(el));
+  }
+
+  // 点击跳转：用 smooth scroll，但要避开固定导航栏（64px）
+  items.forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = el.dataset.pnId!;
+      const target = document.getElementById(id);
+      if (!target) return;
+      const top = target.getBoundingClientRect().top + window.scrollY - 48;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+</script>
