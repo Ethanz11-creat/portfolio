@@ -7,21 +7,290 @@ tags: [AI-Coding, Agent, Loop-Engineering]
 
 ## The core thesis
 
-Loop Engineering is not "repeating a prompt" — it is designing a system that prompts, schedules, validates and hands off agents on your behalf. You move from being a participant who prompts agents directly, to a system designer who builds self-running agent workflows.
+> Loop Engineering is not "repeating a prompt" — it is designing a system that prompts, schedules, validates and hands off agents on your behalf. You move from being a participant who prompts agents directly, to a system designer who builds self-running agent workflows.
 
-## Four stages
+## 1. What Loop Engineering is
 
 The underlying variable driving AI-assisted development over the past two years: **AI's continuous autonomous work span keeps growing**. Each stage brings a new engineering focus.
 
-| Stage | Optimizes | Unit of work | Core question | Autonomous span |
-| --- | --- | --- | --- | --- |
-| Prompt Engineering | Wording of a single instruction | One manual conversation | Better wording, better single output | One Q&A |
-| Context Engineering | What enters the context window | The environment around one answer | Right context, hard tasks become tractable | Tens of steps |
-| Harness Engineering | Safe, reliable execution environment for one task | One autonomous session | Build the environment, agents run long | Hours |
-| Loop Engineering | Self-running workflows across sessions | Multi-round, cross-session lifecycle | Build the system, unattended continuous delivery | Days, dozens of parallel instances |
+| Stage | Optimizes | Unit of work | Core question | Autonomous span | Typical bottleneck |
+| --- | --- | --- | --- | --- | --- |
+| Prompt Engineering | Wording of a single instruction | One manual conversation | Better wording, better single output | One Q&A | Output quality falls short; must re-ask |
+| Context Engineering | What enters the context window | The environment around one answer | Right context, hard tasks become tractable | Tens of steps | Missing or overloaded context |
+| Harness Engineering | Safe, reliable execution environment for one task | One autonomous session | Build the environment, agents run long | Hours | Still a single, unscheduled session |
+| Loop Engineering | Self-running workflows across sessions | Multi-round, cross-session lifecycle | Build the system, unattended continuous delivery | Days, dozens of parallel instances | Premature stop, ignored errors, unverifiable completion |
 
-## Lessons from practice
+### 1.1 Boundaries between layers
 
-- Each stage has a typical bottleneck: output quality at the Prompt stage, missing or overloaded context at the Context stage, unscheduled single sessions at the Harness stage, and premature stopping, ignored errors and unverifiable completion at the Loop stage
-- The shift from "participant" to "system designer" is the most important watershed in AI collaboration
-- When designing loops, completion verification and error handling matter more than the prompts themselves
+- **Prompt**: optimize the wording and instruction of a single model call.
+- **Context**: organize the most relevant background — docs, history, RAG, knowledge retrieval and memory.
+- **Harness**: build a controllable sandbox for one long agent session, managing tools, permissions, rules, fault tolerance, audit and human takeover. A common phrasing: `Agent = model + Harness`.
+- **Loop**: schedule the task lifecycle across rounds or sessions — discover, assign, verify, record state, and decide to retry, stop or hand off.
+
+> **Addy Osmani's summary**: "You're no longer the person prompting the agent; you design the system that prompts the agent for you."
+
+### 1.2 Why the "Engineering" matters
+
+An unattended loop needs more than "repeat execution"; it must answer:
+
+- When to launch an agent?
+- What should it do, and how many to launch?
+- Who accepts the result? How to retry on failure?
+- Where does state live?
+- When to stop or hand off?
+
+So Loop Engineering is not a new discipline learned from scratch — it is AI engineering evolved to the stage where work executes, schedules and validates across sessions automatically. Product capabilities like Claude Code / Codex's `/loop` and `/goal` make it directly usable.
+
+## 2. Inner loop and outer loop
+
+### 2.1 The inner loop inside a single session
+
+A single coding-agent run generally follows the ReAct loop:
+
+| Stage | English | What it does |
+| --- | --- | --- |
+| Intent | Intent | Define the success result and constraints |
+| Context | Context | Gather code, docs, error logs and conventions |
+| Action | Action | Edit files, run commands, call tools, draft plans |
+| Observation | Observation | Get test results, compile errors, runtime output and diffs |
+| Adjustment | Adjustment | Update the plan from observations, iterate until done or blocked |
+
+Fixing a bug, Claude Code reads the file → edits → runs tests → sees errors → edits again. This loop happens inside a single session and is managed by the Harness; `CLAUDE.md`, Skills, Hooks and permission constraints all serve it.
+
+### 2.2 The outer loop across sessions
+
+The outer loop concerns: who launches the agent, when, with what task, and how to verify and move to the next round.
+
+A typical scenario: every day, scan GitHub issues marked as bugs, pick the highest priority, open a branch, fix, run tests, create a PR, and have another agent review the result. Here the trigger is a cron job; picking, accepting and next-steps are all orchestrated by the system — the human becomes the system designer.
+
+| Dimension | Inside one session (Harness) | Loop (the object of Loop Engineering) |
+| --- | --- | --- |
+| Who drives | The agent itself | An orchestration system you design |
+| What one cycle does | read → edit → test → observe → edit again | discover task → dispatch agent → verify result → record state → open next round |
+| Lifecycle | Within one session | Across sessions and time |
+
+Common triggers: by time (cron), by event (PR created, CI failed), by goal (until a condition is met), combined with multi-agent parallelism and cross-session state.
+
+### 2.3 Five building blocks + one memory
+
+| Block | Responsibility | Claude Code equivalent |
+| --- | --- | --- |
+| ① Scheduling / heartbeat | Decide when to start and what to do | Cron, `/loop`, Hooks, GitHub Actions |
+| ② Isolation / Worktrees | Keep parallel agents from clashing | `git worktree`, subagent `isolation: worktree` |
+| ③ Skills | Encode stack, build steps and pitfalls into external conventions | `.claude/skills/SKILL.md`, `CLAUDE.md`, project `docs/` |
+| ④ Connectors | Access tickets, databases, APIs, notification systems | MCP servers and plugins |
+| ⑤ Subagents / maker-checker split | Keep the executor from self-persuading via an independent checker | `.claude/agents/` subagents, `/goal`'s independent evaluator |
+| ⑥ Memory | Persist cross-session state | Markdown progress files, boards |
+
+Two principles:
+
+- **Agents forget, the repo doesn't**: state must live in a persistent store outside the session.
+- **Separate the maker from the checker**: an independent checker is the key to a reliable stop condition.
+
+## 3. `/loop` and `/goal` in Claude Code
+
+### 3.0 Why Auto Mode isn't enough
+
+`/loop` and `/goal` don't solve "can it finish" — they solve: **when no one is present, can work continue, and do we know when it's done**.
+
+- Auto-advancing turns: no manual "continue" click each round;
+- Independent completion verdict: decided by an independent evaluator, not the executing model;
+- Cadence wake-ups: triggered by time or events, no need to watch the clock.
+
+### 3.1 The two commands at a glance
+
+| Command | When the next round starts | Stop condition |
+| --- | --- | --- |
+| `/goal` | Immediately after the previous round | An independent model confirms the condition is met |
+| `/loop` | When the interval elapses | Manual stop, or Claude judges the work is done |
+
+`/loop` manages cadence (when to trigger); `/goal` manages closure (how good counts as done). They can be used separately or combined.
+
+### 3.2 `/loop`: the time-based scheduler
+
+`/loop` is a session-level scheduler. You can specify the interval and task in natural language.
+
+**1. Fixed interval + a task**
+
+```text
+# Check deployment status every 5 minutes
+/loop 5m check whether this deployment finished, and tell me what happened
+```
+
+The interval can be written before or after (`5m`, `every 5m`), with units `s`/`m`/`h`/`d`; seconds round up to minutes, and non-divisible intervals are adjusted to the nearest valid value and announced.
+
+**2. Adaptive interval**
+
+```text
+/loop check whether CI passed, and handle new review comments
+```
+
+With no interval, Claude dynamically picks the next run time between 1 minute and 1 hour based on how much has changed; usually cheaper on tokens than a fixed interval.
+
+**3. Bare `/loop`: maintenance mode**
+
+```text
+/loop
+```
+
+Default behavior: finish unfinished work → maintain the current branch's PR (comments, builds, conflicts) → clean up when idle (find bugs, simplify code). You can replace the default with `.claude/loop.md` or `~/.claude/loop.md`.
+
+| Rule | Meaning |
+| --- | --- |
+| Session-level safety net | Loops bind to the current session; closing the terminal stops them. To survive a reboot, use desktop Routines or GitHub Actions |
+| 7-day expiry | Each loop auto-stops after 7 days (runs once more, then is removed) |
+| Concurrency cap | At most 50 loops per session |
+| Missed runs | A round missed while busy runs at most once later, when idle |
+| On-the-hour jitter | On-the-hour tasks may be delayed up to 30 minutes randomly; avoid exact hours (e.g. use 09:03) |
+| Global disable | Env var `CLAUDE_CODE_DISABLE_CRON=1` |
+
+You can also nest other commands:
+
+```text
+/loop 20m /review-pr 1234
+```
+
+**Best for**: deployment / CI / health-check polling, periodic summaries, PR babysitting — genuinely periodic work.
+
+### 3.3 `/goal`: the goal-driven executor
+
+`/goal` makes the agent work across many rounds toward a **verifiable completion condition**, until met or manually stopped.
+
+```text
+/goal turn this research note into a structured outline, one sentence per point, until there are no empty headings
+```
+
+**Core mechanism: separating execution from judgement**
+
+1. After `/goal <condition>`, the main model runs the first round;
+2. Each round, the system hands the condition plus conversation history to an independent lightweight evaluator (default Haiku);
+3. The evaluator only judges whether the condition is met: if not, it returns a reason and the main model continues; if met, the goal is cleared and execution ends.
+
+Independent evaluation avoids the executing model mistaking "did a lot" for "finished".
+
+**The three-part recipe for a good goal**
+
+| Element | Requirement | Example |
+| --- | --- | --- |
+| Measurable end state | Use test exit codes, file counts, empty queues | Not "optimize performance", but "API response under 200ms" |
+| Explicit verification | Say how evidence shows up in the conversation | `npm test` exits 0, `git status` is clean |
+| Untouchable constraints | Draw the boundaries of change | Only touch `test/auth`, don't delete existing features |
+
+> The evaluator only sees what the main model explicitly writes in the conversation — it doesn't run commands or read files. So "is it well written" is a poor `/goal` stop condition.
+
+| Vague / unverifiable | Clear / verifiable |
+| --- | --- |
+| Optimize performance | API response under 200ms, without touching core business logic |
+| Fix the bug | Fix the login-module bug, all tests pass and lint is clean |
+| Tidy the project files | Split `src` by module; each file ≤ 300 lines with no unused deps |
+
+Good `/goal` tasks include migrations, requirement delivery, refactors, backlog clearing and quality control. Add a safety valve like `or stop after 20 turns` or `or stop after 90 minutes`.
+
+### 3.4 Division of labor and composition
+
+```text
+/goal: condition-driven; checks after each round, stops only when the condition is met.
+/loop: time-driven; triggers the next round on an interval.
+Auto Mode: removes the per-tool-call human confirmation.
+```
+
+Auto Mode + `/goal` + `/loop` together enable unattended runs — provided the goal, verification and safety boundaries are clear enough.
+
+## 4. Daily practice: two examples
+
+### Practice A: daily dev summary
+
+```text
+# Scheduled: every workday at 19:00
+/loop every workday at 7pm, scan today's git commits and changes across all projects under ~/pycode,
+compile a "Today's dev summary" (grouped by project: what / why / impact / tomorrow's todos),
+and create a new doc in my team's doc space
+
+# Manual: run before leaving, ensure completion
+/goal read the git log and diff of projects under ~/pycode changed today, write a "Today's dev summary",
+create it in my team's doc space; until the doc exists and each project has what/why/impact/todos
+```
+
+This uses three building blocks: ① heartbeat (timed trigger), ④ connector (writing to a doc space), ⑥ memory (doc as persisted state). It's a safe usage: read Git + create docs only, no modifications to existing content.
+
+### Practice B: weekly report
+
+```text
+/loop every Thursday at 5pm, group this week's commits across ~/pycode into feature/fix/refactor/test/docs,
+produce a weekly draft (done this week / in progress / next week's plan), publish to my team's doc space
+```
+
+A weekly report is a classic cadenced, unattended task that produces a draft for later human polish.
+
+## 5. In production
+
+### 5.1 Frontend/backend: green-light loop and PR babysitting
+
+```text
+/goal npm test green, lint clean, build success; until all three are green
+
+/loop 5m check whether this PR's CI passed; if red, pull logs, locate, push a fix
+
+/goal src/ compiles fully in strict mode, zero errors, 0 any
+```
+
+`/goal` drives verifiable work to green automatically; `/loop` keeps watch over state that needs polling.
+
+### 5.2 Ten reusable scenario templates
+
+| # | Scenario | Command | What it does |
+| --- | --- | --- | --- |
+| ① | Deep research | `/loop` | Each round pick one uncovered angle, search keywords, read articles, append 300–500 words to report.md; write "research complete" when all angles covered |
+| ② | Site / docs SEO check | `/loop 1h` | Check frontmatter, keywords, internal links, structured data per post; log failures to seo-audit.md |
+| ③ | Competitor / news watch | `/loop 30m` | Search competitors for releases/updates/tutorials, only append unseen entries, write nothing if nothing new |
+| ④ | Batch task progress | `/goal` | Process tasks.md "pending" items in order, mark blocked ones "needs human" and skip, until empty |
+| ⑤ | Batch doc / file generation | `/goal` | Create each file in file-list.md, skip existing ones, stop when all marked |
+| ⑥ | Overnight refactor | `/goal` | Split a module by concerns, run tests per split, mark "needs human" after 3 consecutive failures |
+| ⑦ | Daily news digest | `/loop 24h` | Search the past 24h of relevant news, write one-line summaries + links for top 10, sort by importance |
+| ⑧ | Content pipeline | `.claude/loop.md` | Define "topic → research → draft → self-check → ready" stages in loop.md |
+| ⑨ | Self-improving skill | `/loop 2m` | Tweak one prompt per round, run eval cases, save and commit if pass-rate improves, else roll back |
+| ⑩ | Whole-site improvement | `/loop 10m` | Each round pick one small thing from "fix > test > docs > clean > error-handling", do it and commit |
+
+### 5.3 Cost and safety red lines
+
+> Two red lines for every loop:
+> **~5-minute cache window** — intervals ≤ 5 min reuse the model cache, keeping cost low; longer gaps expire the cache and each round may be repriced at full cost.
+> **Pre-check first** — at the top of each round, check whether there's anything to do; exit at zero cost when idle, so you don't run the whole flow with no work.
+
+## 6. Advanced patterns
+
+### 6.1 Checker Agent: two-session cross-review
+
+Run two Claude Code sessions simultaneously:
+
+- Main session: implement features, push the project forward;
+- Checker session: review the main session's output every 15 minutes via `/loop`.
+
+They share project files but have isolated conversation context; the checker doesn't know the author's intent and only reviews file changes, making it easier to catch self-persuasion and omissions from accumulated context. This is a direct implementation of "separate the maker from the checker".
+
+### 6.2 `VISION.md`: the direction anchor
+
+Long loops can drift, especially after context compaction. The fix is a `VISION.md` at the repo root spelling out the north-star goal and key constraints, read as the first step of every round.
+
+- `CLAUDE.md`: project memory, for the agent;
+- `VISION.md`: direction anchor, for long-running loops.
+
+Add `VISION.md` once a loop exceeds ~10 rounds.
+
+## 7. It moves the lever, not the responsibility
+
+Loops change how you work, but not your accountability. As loop capability grows, these risks matter more, not less:
+
+| Risk | Meaning | Response |
+| --- | --- | --- |
+| Verification burden | An unattended loop also produces errors unattended; "verified" is a claim, not a proof | Human review before merge cannot be removed |
+| Comprehension debt | The faster loops ship, the wider the gap between "what's in the repo" and "what you actually understand" | Read the code loops produce |
+| Cognitive surrender | Once it runs automatically, the worst failure is accepting every result without judgement | Design loops with judgement — not as an escape from thinking |
+
+## References
+
+1. [Addy Osmani — Loop Engineering](https://addyosmani.com/blog/loop-engineering/): recursive goals, five blocks + memory, Harness/Loop boundaries and risks.
+2. Boris Cherny / Peter Steinberger original ideas on X: [Peter Steinberger](https://x.com/steipete/status/2063697162748260627), [Boris Cherny's recount](https://x.com/rohanpaul_ai/status/2063289804708835412).
+3. [Claude Code docs: working toward a goal](https://code.claude.com/docs/zh-CN/goal): `/goal`, `/loop` and scheduling.
+4. [Cobus Greyling — loop-engineering](https://github.com/cobusgreyling/loop-engineering): third-party open-source implementation inspired by Osmani.
+5. Related concepts from Addy Osmani: [Agent Harness Engineering](https://addyosmani.com/blog/agent-harness-engineering/), [Comprehension Debt](https://addyosmani.com/blog/comprehension-debt/), [Cognitive Surrender](https://addyosmani.com/blog/cognitive-surrender/).
