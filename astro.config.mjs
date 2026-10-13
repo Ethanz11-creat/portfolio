@@ -5,7 +5,7 @@ import { remarkMermaid } from './src/lib/remark-mermaid.mjs';
 import { unified } from '@astrojs/markdown-remark';
 
 export default defineConfig({
-  site: 'https://portfolio-2ig.pages.dev',
+  site: 'https://ethanz11.com',
   integrations: [
     mdx(),
     sitemap(),
